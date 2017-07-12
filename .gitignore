@@ -1,0 +1,6 @@
+
+/assets/
+/node_modules/
+**/*.zip
+/build/
+.idea/

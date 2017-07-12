@@ -1,0 +1,62 @@
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8">
+      <title></title>
+      <link rel="stylesheet" href="style.css" type="text/css">
+
+    </head>
+    <body>
+
+      <div id="loading-container">
+        <div class="pulse-loader"></div>
+      </div>
+      <div class="app-container">
+        <div id="overlay">
+          <div class="min-container">
+            <div class="overlay-buttons">
+              <div class="button emma"></div>
+              <div class="button spectateur button-spectateur"></div>
+              <div class="button solvej"></div>
+            </div>
+            <h3 class="overlay-title">Cliquez pour changer de <br> point de vue</h3>
+          </div>
+        </div>
+        <div id="pause-overlay">
+
+        </div>
+        <div class="container-video">
+          <video width="400" height="222" id="spectateur">
+            <source src="assets/videos/spectateur.mp4" type="video/mp4">
+          </video>
+          <video width="400" height="222" id="emma">
+            <source src="assets/videos/emma.mp4" type="video/mp4">
+          </video>
+          <video width="400" height="222" id="solvej">
+            <source src="assets/videos/solvej.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div id="debug-container">
+
+        </div>
+
+        <div class="container-button">
+          <div class="button hide emma" id="emma-bt">
+
+          </div>
+          <div class="button hide spectateur button-spectateur" id="spectateur-bt">
+          </div>
+          <div class="button hide solvej" id="solvej-bt">
+
+          </div>
+          <div id="timer-bar-container" class="">
+            <div id="timer-bar">
+              <div class="timer-bar-handle"></div>
+            </div>
+            <canvas id="timer-background" width="600" height="20"></canvas>
+          </div>
+        </div>
+      </div>
+      <script src="build/bundle.js"></script>
+    </body>
+  </html>
