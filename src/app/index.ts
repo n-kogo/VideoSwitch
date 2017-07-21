@@ -7,7 +7,8 @@ import {
   toggleVideo
 } from "./functions";
 import {DebugElement} from "./class/debugElement";
-
+import {LoaderService} from "./class/MediaLoader";
+import '../styles/style.scss';
 
 
 /*
@@ -26,6 +27,8 @@ window.onload = function(){
   //TODO: add audio to each pdv
   g.audio.voix = document.createElement("audio");
   g.audio.voix.src = "assets/audio/voix.mp3";
+  LoaderService.load(g.audio.voix);
+
   //key handle
   window.addEventListener('keydown', function(event){
     if(event.keyCode === 32) { //space

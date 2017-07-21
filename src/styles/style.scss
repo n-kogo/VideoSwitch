@@ -1,8 +1,14 @@
 @font-face{
   font-family: 'OpenSans';
-  src:url('assets/fonts/OpenSans-light.ttf');
+  src:url('../assets/fonts/OpenSans-Light.ttf');
 }
 
+#timer-background{
+  position: absolute;
+  left: 0;
+  border:1px solid turquoise;
+  top: 0;
+}
 
 .app-container *.hide{
   opacity: 0;
@@ -28,6 +34,8 @@ body{
   z-index: 100;
   transition: all .35s;
 }
+
+#loading-bar{}
 
 #loading-container.hide{
   opacity: 0;
@@ -87,15 +95,15 @@ video.active{
 }
 
 .button.emma{
-  background-image: url(assets/images/button_emma.png);
+  background-image: url(../assets/images/button_emma.png);
 }
 
 .button.solvej{
-  background-image: url(assets/images/button_solvej.png);
+  background-image: url(../assets/images/button_solvej.png);
 }
 
 .button-spectateur{
-  background-image: url(assets/images/button_spect.png);
+  background-image: url(../assets/images/button_spect.png);
 }
 
 .button.hide{

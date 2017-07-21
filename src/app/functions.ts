@@ -1,14 +1,27 @@
 import {g} from './globals'
-import {CST} from './const'
+import {CST, Media} from './const'
 import {DebugElement} from "./class/debugElement";
 import {PointDeVue} from "./class/PointDeVue";
+import {LoaderService} from "./class/MediaLoader";
 
-let frameBloc, pdvBloc, absPdvBloc, spectaBloc,
-  emmaBloc, solvejBloc;
-let timerBarBloc, timerBarContainerBloc;
+let timerBarBloc, timerBarContainerBloc, timerCanvas : HTMLCanvasElement;
 
 timerBarBloc = document.getElementById('timer-bar');
 timerBarContainerBloc = document.getElementById('timer-bar-container');
+timerCanvas = <HTMLCanvasElement> document.getElementById('timer-background');
+
+
+export function getMediaBuffer(media: Media): Array<[number, number]>{
+  let arr = [];
+  let l = media.buffered.length;
+  while(l--){
+    arr.push([
+      secondToFrame(media.buffered.start(l)),
+      secondToFrame(media.buffered.end(l))
+    ])
+  }
+  return arr;
+}
 
 
 export function frameToSecond(frame){
@@ -215,16 +228,26 @@ export function updateTimerBar(){
 }
 
 // MAIN LOOP
-
 export function frameUpdate(){
   let currPdv, key;
   g.deltaTimestamp = performance.now() - g.currentTimestamp;
   g.currentTimestamp = performance.now();
+  LoaderService.update();
   if(g.state.isPlaying && !g.state.isWaiting){
     g.filmTimestamp += g.deltaTimestamp;
     g.currentFrame = secondToFrame(g.filmTimestamp / 1000);
   }
-  if(g.state.isLoading){
+
+  if(!g.state.isAudioLoaded){
+    let pdv, buffer;
+    let percent = 0;
+
+    for(key in g.pointDeVue){
+      pdv = g.pointDeVue[key];
+      buffer = pdv.getAudioBuffer();
+    }
+  }
+  else if(g.state.isLoading){
     // if both audio are ready
     if(g.audio.voix.readyState === 4){
       // if no shot frame nearby
@@ -265,7 +288,9 @@ export function frameUpdate(){
         }
       }
     }
-
+  }
+  else{
+    bufferUpdate();
   }
   //playback rate
   for (key in g.pointDeVue){
@@ -328,4 +353,34 @@ export function frameUpdate(){
     window.requestAnimationFrame(frameUpdate);
   }
   //video end
+}
+
+
+let fillStyles = {
+  emma: "rgba(200, 200, 0, .9)",
+  spectateur: "rgba(20, 200, 200, .9)",
+  solvej: "rgba(250, 10, 10, .9)"
+};
+
+export function bufferUpdate(){
+  timerCanvas.width = window.innerWidth;
+  let ctx: CanvasRenderingContext2D = timerCanvas.getContext('2d');
+  ctx.clearRect(0, 0, timerCanvas.width, timerCanvas.height);
+  ctx.fillStyle = "#FFFFFF";
+  ctx.fillRect(0, 0, timerCanvas.width, timerCanvas.height);
+  let pdv: PointDeVue, vid: HTMLVideoElement, buffer;
+  let bIndex: number, start, end;
+  let i = 0;
+  for (let key in g.pointDeVue){
+    pdv = g.pointDeVue[key];
+    ctx.fillStyle = fillStyles[key];
+    buffer = pdv.getVideoBuffer();
+    for(let range of buffer){
+      start = (pdv.depart + range[0]) / CST.FILM_DATA.FIN;
+      end = (pdv.depart + range[1]) / CST.FILM_DATA.FIN;
+      console.log(start, end, key);
+      ctx.fillRect(timerCanvas.width * start, (i / 3) *  timerCanvas.height, timerCanvas.width * end, (1 / 3) *  timerCanvas.height);
+    }
+    i++;
+  }
 }

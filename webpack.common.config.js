@@ -2,6 +2,6 @@
 
 module.exports = {
   entry: [
-    './dist/index.js'
+    './src/app/index.ts'
   ]
 };

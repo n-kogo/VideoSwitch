@@ -1,5 +1,6 @@
-import {selectVideo} from "../functions";
+import {secondToFrame, selectVideo} from "../functions";
 import {CST} from "../const";
+import {LoaderService} from "./MediaLoader";
 
 export class PointDeVue{
   video: HTMLVideoElement;
@@ -13,6 +14,8 @@ export class PointDeVue{
     this.audio = document.createElement('audio');
     this.audio.src = 'assets/audio/bande_son_'  + tag + '.mp3';
     this.audio.volume = 0;
+    LoaderService.load(this.audio);
+
     this.button = document.getElementById(tag + "-bt");
     this.button.addEventListener('click', ()=>{selectVideo(this.tag)});
   }
@@ -40,6 +43,30 @@ export class PointDeVue{
 
   isReady(){
     return this.audio.readyState == 4 &&  this.video.readyState == 4;
+  }
+
+  getVideoBuffer(): Array<[number, number]>{
+    let arr = [];
+    let l = this.video.buffered.length;
+    while(l--){
+      arr.push([
+        secondToFrame(this.video.buffered.start(l)),
+        secondToFrame(this.video.buffered.end(l))
+      ])
+    }
+    return arr;
+  }
+
+  getAudioBuffer(): Array<[number, number]>{
+    let arr = [];
+    let l = this.audio.buffered.length;
+    while(l--){
+      arr.push([
+        secondToFrame(this.audio.buffered.start(l)),
+        secondToFrame(this.audio.buffered.end(l))
+      ])
+    }
+    return arr;
   }
 
 }

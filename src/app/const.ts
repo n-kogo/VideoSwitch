@@ -74,3 +74,7 @@ export const CST = {
 CST.FPS = CST.FILM_DATA.FRAMERATE;
 
 CST.INTERVAL = 1000 / CST.FILM_DATA.FRAMERATE;
+
+
+
+export type Media = HTMLVideoElement | HTMLAudioElement;

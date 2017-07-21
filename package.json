@@ -5,11 +5,13 @@
   "main": "scripts.js",
   "scripts": {
     "build": "webpack",
-    "watch": "webpack --watch --config webpack.dev.config.js",
-    "dev": "webpack-dev-server --config webpack.dev.config.js --no-inline"
+    "dev": "webpack-dev-server --content-base build --config webpack.dev.config.js --no-inline",
+    "watch": "webpack --watch --config webpack.dev.config.js"
   },
   "devDependencies": {
     "css-loader": "^0.28.4",
+    "file-loader": "^0.11.2",
+    "html-loader": "^0.4.5",
     "node-sass": "^4.5.3",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",

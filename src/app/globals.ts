@@ -11,7 +11,7 @@ export let g:{
   state: {
     isPlaying: boolean,
     isLoading: boolean,
-
+    isAudioLoaded: boolean,
     isWaiting: boolean
   },
   currentVideo: string;
@@ -38,7 +38,8 @@ export let g:{
   state: {
     isPlaying: false,
     isLoading: false,
-    isWaiting: false
+    isWaiting: false,
+    isAudioLoaded: false
   },
   currentVideo: null,
   nextVideo: null,

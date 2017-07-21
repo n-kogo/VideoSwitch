@@ -3,20 +3,15 @@
 const path = require('path');
 var commonConfig = require('./webpack.common.config');
 
-
 var output = {
   filename: 'bundle.js',
   sourceMapFilename: '[file].map',
-  path: path.resolve(__dirname, 'build'),
+  path: path.resolve(__dirname, 'dist'),
   publicPath: '/assets/'
 };
 
 
 module.exports = Object.assign(commonConfig, {
-  entry: [
-    './src/index.ts',
-    // 'webpack-dev-server/client?http://localhost:8080'
-  ],
   devtool: 'source-map',
   output: output,
   devServer: {
@@ -28,10 +23,42 @@ module.exports = Object.assign(commonConfig, {
       {
         test: /\.tsx?$/,
         loader: 'ts-loader'
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          'sass-loader'
+        ]
+      },
+      {
+        test: /\.(png|svg|jpg|gif)$/,
+        use: [
+          'file-loader'
+        ]
+      },
+      {
+        test: /\.(html)$/,
+        use: {
+          loader: 'html-loader',
+          options: {
+            attrs: [':data-src']
+          }
+        }
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/,
+        use: [
+          'file-loader'
+        ]
       }
+
     ]
   },
   resolve: {
-    extensions: [ '.ts', '.tsx', 'js' ]
+    extensions: [ '.ts', '.tsx', '.js']
   }
 });
+
+console.log(require('util').inspect(module.exports, {colors: true}))
