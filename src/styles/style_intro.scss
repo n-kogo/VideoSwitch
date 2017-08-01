@@ -1,3 +1,5 @@
+//     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
 @font-face{
   font-family: 'Basictitlefont';
   src:url('../assets/fonts/basictitlefont.ttf');
@@ -8,21 +10,23 @@
   /*src:url('assets/fonts/OpenSans-light.ttf');*/
 /*}*/
 
-body,html{
+.home{
   margin: 0;
   padding: 0;
   color: white;
   background-color: black;
+  /*background-image: url(assets/images/titre_fond.jpg);*/
+  width: 100%;
+  font-family: 'Open Sans', sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
 }
+
 #background-video{
   z-index: 3;
 }
 body{
-  /*background-image: url(assets/images/titre_fond.jpg);*/
-  width: 100%;
-  font-family: 'Open Sans', sans-serif;
-  height: 100%;
-  overflow: hidden;
 }
 .coming-date{
   width:  500px;
@@ -44,6 +48,8 @@ a:visited{
   z-index: 5;
   opacity: 1;
   position: relative;
+  width:100%;
+  height: 100%;
 }
 
 h1{
@@ -77,20 +83,19 @@ h2{
   text-transform: uppercase;
   cursor: pointer;
   box-shadow: inset 0 0 0 0 #f1f1f1;
-  transition: all 0.8s;
-
+  transition: all 0.6s;
+  &:hover {
+    box-shadow: inset 500px 0 0 0 #f1f1f1;
+    color: #363636;
+  }
 }
+
+
+
 h3{
   text-align: center;
   text-transform: uppercase;
 }
-
-
-.button-start:hover {
-  box-shadow: inset 800px 0 0 0 #f1f1f1;
-  color: #363636;
-}
-
 
 p{
   margin: 0;

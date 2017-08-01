@@ -1,63 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Le Refuge des Souvenirs - Acceuil</title>
-  </head>
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-  <link rel="stylesheet" href="styles/style_intro.scss" type="text/css">
-  <body>
-
-    <div class="shader">
-      <video id="background-video" autoplay loop>
-        <source src="assets/videos/boucle_intro.mp4" type="video/mp4">
-      </video>
-      <div class="content">
-        <h1 class="titre">Le Refuge des Souvenirs</h1>
-        <h2 class="sous-titre">Court-métrage d'animation interactif</h2>
-        <div class="home-container">
-          <a href="film.html" class="button-start">Jouer le film</a>
-          <div class="home-description">
-            <h3>Une histoire, trois visions:</h3>
-            <p>Solvej et Emma sont amies d'enfance.</p>
-            <p>Elles se retrouvent quelques années plus tard dans la cabane de leurs années de jeunesse. Seulement, elles ont désormais une vision différente de leur amitié.</p>
-          </div>
-          <div class="footer">
-            Lyne HEHLEN | EMCA 2017
-          </div>
-        </div>
-      </div>
-    </div>
-  </body>
-  <script>
-    document.getElementById('background-video').volume = 0;
-    var CST = {
-      VIDEO_RATIO: 2200 / 1080,
-    };
-    var video = document.getElementById('background-video');
-    function resize(){
-      var width, height, mtop, mleft;
-      if(window.innerWidth / CST.VIDEO_RATIO <= window.innerHeight){
-        width = window.innerWidth;
-        height = window.innerWidth / CST.VIDEO_RATIO;
-        mtop = (window.innerHeight - height) / 2;
-        mleft = 0;
-      }
-      else {
-        width = window.innerHeight * CST.VIDEO_RATIO;
-        height = window.innerHeight;
-        mtop = 0;
-        mleft = (window.innerWidth - width) / 2;
-      }
-      video.setAttribute('width', width);
-      video.setAttribute('height', height);
-      video.parentNode.style.width =  width;
-      video.parentNode.style.height =  height;
-      video.parentNode.style.top = mtop + "px";
-      video.parentNode.style.left = mleft + "px";
-    }
-    resize();
-    window.onresize = resize;
-
-  </script>
+<head>
+  <meta charset="utf-8">
+  <title>Le Refuge des souvenirs</title>
+</head>
+<body>
+<div id="root"></div>
+</body>
 </html>

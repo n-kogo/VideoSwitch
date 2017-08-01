@@ -8,18 +8,20 @@ export class PointDeVue{
   button: HTMLElement;
   delta: number =  1 / (.75 * CST.FPS);
   currentInterval: any;
+  src: string;
   constructor(public tag, public depart: number, public fin: number, public color: string){
     this.video = <HTMLVideoElement> document.getElementById(tag);
     this.video.volume = 0;
+    this.src = this.video.src;
+    this.video.src = "";
+    this.video.load();
     this.audio = document.createElement('audio');
     this.audio.src = 'assets/audio/bande_son_'  + tag + '.mp3';
     this.audio.volume = 0;
     LoaderService.load(this.audio);
-
     this.button = document.getElementById(tag + "-bt");
     this.button.addEventListener('click', ()=>{selectVideo(this.tag)});
   }
-
   mute(){
     clearInterval(this.currentInterval);
     this.currentInterval = setInterval(()=>{
@@ -55,6 +57,11 @@ export class PointDeVue{
       ])
     }
     return arr;
+  }
+
+  load(){
+    this.video.src = this.src;
+    this.video.load();
   }
 
   getAudioBuffer(): Array<[number, number]>{

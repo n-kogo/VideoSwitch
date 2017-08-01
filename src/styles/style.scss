@@ -29,6 +29,7 @@ body{
   position: absolute;
   background: black;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 100;
@@ -470,11 +471,13 @@ video.active{
 
 
 .pulse-loader {
+  position: absolute;
   animation: pulseloader infinite 1.3s linear;
   border:#FFF 15px solid;
   border-radius:50%;
   box-sizing:border-box;
   height:25px;
+  margin-top: -35px;
   opacity:0;
   width: 25px;
 }

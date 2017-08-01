@@ -6,10 +6,11 @@ import {LoaderService} from "./class/MediaLoader";
 
 let timerBarBloc, timerBarContainerBloc, timerCanvas : HTMLCanvasElement;
 
-timerBarBloc = document.getElementById('timer-bar');
-timerBarContainerBloc = document.getElementById('timer-bar-container');
-timerCanvas = <HTMLCanvasElement> document.getElementById('timer-background');
-
+export function cacheDomElements(){
+  timerBarBloc = document.getElementById('timer-bar');
+  timerBarContainerBloc = document.getElementById('timer-bar-container');
+  timerCanvas = <HTMLCanvasElement> document.getElementById('timer-background');
+}
 
 export function getMediaBuffer(media: Media): Array<[number, number]>{
   let arr = [];
@@ -232,7 +233,6 @@ export function frameUpdate(){
   let currPdv, key;
   g.deltaTimestamp = performance.now() - g.currentTimestamp;
   g.currentTimestamp = performance.now();
-  LoaderService.update();
   if(g.state.isPlaying && !g.state.isWaiting){
     g.filmTimestamp += g.deltaTimestamp;
     g.currentFrame = secondToFrame(g.filmTimestamp / 1000);
