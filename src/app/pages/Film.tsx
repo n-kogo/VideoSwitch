@@ -32,13 +32,10 @@ export class Film extends React.Component<any, any>{
           </div>
           <div className="container-video" id="container-video">
             <video width="400" height="222" id="spectateur">
-              <source src="assets/videos/spectateur.mp4" type="video/mp4" />
             </video>
             <video width="400" height="222" id="emma">
-              <source src="assets/videos/emma.mp4" type="video/mp4" />
             </video>
             <video width="400" height="222" id="solvej">
-              <source src="assets/videos/solvej.mp4" type="video/mp4" />
             </video>
           </div>
           <div id="debug-container">

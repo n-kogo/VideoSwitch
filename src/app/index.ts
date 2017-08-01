@@ -3,6 +3,7 @@ import {CST} from "./const";
 import {
   drawDebugTimeline,
   frameUpdate, isPointDeVueAvailable, launchTimerEvents, moveVideoTimer, resize, secondToFrame, selectVideo,
+  setResolution,
   spawnPointDeVue,
   toggleVideo
 } from "./functions";
@@ -29,8 +30,9 @@ export class VideoApp{
 
     //audio loading service
     LoaderService.load(g.audio.voix);
-    LoaderService.onLoad(()=>{
+    LoaderService.onLoad((loadTime)=>{
       console.log('LOADER SERVICE FN TRIGGERED');
+      setResolution(loadTime);
       g.state.isAudioLoaded = true;
       for(let key in g.pointDeVue){
         g.pointDeVue[key].load();

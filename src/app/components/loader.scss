@@ -6,5 +6,6 @@
 }
 .loading-bar{
   height: 20px;
+  transition: width 0.1s linear;
   background-color: white;
 }

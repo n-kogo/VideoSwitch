@@ -13,6 +13,7 @@ export class MediaLoader {
   private _updateCallbacks: Array<Function> = [];
   private _resources: Array<Resource> = [];
   public globalLoad: number = 0;
+  private _loadStart: number;
   constructor(){
     this.update = this.update.bind(this);
   }
@@ -20,6 +21,7 @@ export class MediaLoader {
     this._updateCallbacks.push(fn);
   }
   load(element: Media){
+    if(!this._loadStart) this._loadStart = performance.now();
     element.load();
     element.volume = 0;
     element.play();
@@ -62,16 +64,18 @@ export class MediaLoader {
       }
       if(globalLoad >= this._resources.length * 100){
         this._loadCallbacks.forEach((callback, index)=>{
-          callback();
+          callback(performance.now() - this._loadStart);
           this._loadCallbacks.splice(0 ,1);
         });
       }
       this._updateCallbacks.forEach((cb)=>{
+        console.log('sending update at', globalLoad / this.getResLength())
         cb(globalLoad / this.getResLength());
       })
     }
     window.requestAnimationFrame(this.update);
   }
+  // on load callback will send back the time it took to load in ms
   onLoad(fn : Function){
     this._loadCallbacks.push(fn);
   }

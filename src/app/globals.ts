@@ -8,6 +8,7 @@ export let g:{
   audio: {
     voix: HTMLAudioElement
   },
+  resolution: number,
   state: {
     isPlaying: boolean,
     isLoading: boolean,
@@ -32,6 +33,7 @@ export let g:{
 } = {
   debugElements:[],
   pointDeVue: {},
+  resolution: 1920,
   audio: {
     voix: null
   },

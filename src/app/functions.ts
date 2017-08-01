@@ -84,7 +84,28 @@ export function resize(){
       videos[i].style.left = mleft + "px";
     }
   }
+}
 
+export function setResolution(loadTime: number){
+  let w = window.innerWidth;
+  let r = 0;
+  if(w <= 900){
+    r = 853;
+  }
+  else if (w <= 1600){
+    r = 1280
+  }
+  else {
+    r = 1920
+  }
+
+  if(loadTime > 1000){
+    r = Math.min(r, 1280)
+  }
+  else if (loadTime > 3000){
+    r = Math.min(r, 853)
+  }
+  g.resolution = r;
 }
 
 // load new video
@@ -216,7 +237,6 @@ export function launchTimerEvents(){
     moveVideoTimer(newFrame);
   });
 }
-
 
 export function updateTimerBar(){
   let timerContainer = document.getElementById('timer-bar-container');
@@ -378,7 +398,7 @@ export function bufferUpdate(){
     for(let range of buffer){
       start = (pdv.depart + range[0]) / CST.FILM_DATA.FIN;
       end = (pdv.depart + range[1]) / CST.FILM_DATA.FIN;
-      console.log(start, end, key);
+      // console.log(start, end, key);
       ctx.fillRect(timerCanvas.width * start, (i / 3) *  timerCanvas.height, timerCanvas.width * end, (1 / 3) *  timerCanvas.height);
     }
     i++;

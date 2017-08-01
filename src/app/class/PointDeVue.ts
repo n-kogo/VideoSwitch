@@ -1,6 +1,7 @@
 import {secondToFrame, selectVideo} from "../functions";
 import {CST} from "../const";
 import {LoaderService} from "./MediaLoader";
+import {g} from "../globals";
 
 export class PointDeVue{
   video: HTMLVideoElement;
@@ -12,8 +13,8 @@ export class PointDeVue{
   constructor(public tag, public depart: number, public fin: number, public color: string){
     this.video = <HTMLVideoElement> document.getElementById(tag);
     this.video.volume = 0;
-    this.src = this.video.src;
     this.video.src = "";
+    console.log(this.video.currentSrc, this.src);
     this.video.load();
     this.audio = document.createElement('audio');
     this.audio.src = 'assets/audio/bande_son_'  + tag + '.mp3';
@@ -60,7 +61,10 @@ export class PointDeVue{
   }
 
   load(){
+    this.src = `./assets/videos/${g.resolution}p/${this.tag}.mp4`;
+    console.log('loaded', this.src);
     this.video.src = this.src;
+    console.log(this.src)
     this.video.load();
   }
 
