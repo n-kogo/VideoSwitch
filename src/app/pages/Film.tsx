@@ -6,16 +6,30 @@ import {AppLoader} from "../components/Loader";
 
 export class Film extends React.Component<any, any>{
   app: VideoApp;
+  videoUpdateCb: Array<Function> = [];
   constructor(props){
     super(props);
     this.state = {loadedPercent: 0};
+    this.app = new VideoApp();
+    this.loadUpdate();
+  }
+  loadUpdate(){
+    let load = 0;
+    for(let key in g.pointDeVue){
+      load += g.pointDeVue[key].video.readyState;
+    }
+    load = load * 100 /  12; // 12 for 3 pov * 4 possible states;
+    this.videoUpdateCb.forEach(function(cb){
+      cb(load);
+    });
+    window.requestAnimationFrame(this.loadUpdate)
   }
   render(){
     return (
       <div>
         <div id="loading-container">
-          <AppLoader />
-          <div className="pulse-loader"></div>
+          <AppLoader onLoad={this.onLoad} onVideoLoadUpdate={this.onVideoUpdate} />
+          {/*<div className="pulse-loader"></div>*/}
         </div>
         <div className="app-container">
           <div id="overlay">
@@ -51,6 +65,7 @@ export class Film extends React.Component<any, any>{
               <div id="timer-bar">
                 <div className="timer-bar-handle"></div>
               </div>
+              <div id="timer-bar-buffer"></div>
               <canvas id="timer-background" width="600" height="20"></canvas>
             </div>
           </div>
@@ -60,6 +75,11 @@ export class Film extends React.Component<any, any>{
   }
   componentDidMount(){
     cacheDomElements();
-    this.app = new VideoApp();
+  }
+  onLoad(loadTime){
+    this.app.onLoad(loadTime);
+  }
+  onVideoUpdate(fn: Function){
+    this.videoUpdateCb.push(fn);
   }
 }

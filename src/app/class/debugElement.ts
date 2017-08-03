@@ -2,7 +2,7 @@ export class DebugElement {
   bloc: HTMLElement;
   element: HTMLElement;
   parent: HTMLElement;
-  constructor(public name: string, private updateFn: ()=> string){
+  constructor(public name: string, private updateFn: ()=> string | number){
     this.name = 'debug-' + this.name;
     this.parent = document.getElementById('debug-container');
     let para = document.createElement('p');
@@ -13,13 +13,16 @@ export class DebugElement {
     span.id = this.name + '-value';
     para.appendChild(b);
     para.appendChild(span);
-
     this.parent.appendChild(para);
     this.bloc = para;
     this.element = span;
   }
 
   update(){
-    this.element.innerHTML = this.updateFn();
+    let content = this.updateFn();
+    if(typeof content === 'number'){
+      content = content.toFixed(2);
+    }
+    this.element.innerHTML = <string> content;
   }
 }

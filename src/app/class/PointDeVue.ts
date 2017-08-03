@@ -14,7 +14,6 @@ export class PointDeVue{
     this.video = <HTMLVideoElement> document.getElementById(tag);
     this.video.volume = 0;
     this.video.src = "";
-    console.log(this.video.currentSrc, this.src);
     this.video.load();
     this.audio = document.createElement('audio');
     this.audio.src = 'assets/audio/bande_son_'  + tag + '.mp3';
@@ -41,11 +40,13 @@ export class PointDeVue{
         this.audio.volume = 1;
         clearInterval(this.currentInterval);
       }
+      console.log('volume', this.audio.volume, this.audio.currentTime, this.audio.paused);
     }, CST.FPS);
   }
 
   isReady(){
-    return this.audio.readyState == 4 &&  this.video.readyState == 4;
+    // TODO: determine in audio.readystate is useful
+    return this.audio.readyState == 4 && this.video.readyState == 4;
   }
 
   getVideoBuffer(): Array<[number, number]>{
@@ -64,7 +65,7 @@ export class PointDeVue{
     this.src = `./assets/videos/${g.resolution}p/${this.tag}.mp4`;
     console.log('loaded', this.src);
     this.video.src = this.src;
-    console.log(this.src)
+    console.log(this.src);
     this.video.load();
   }
 

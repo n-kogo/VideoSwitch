@@ -4,10 +4,14 @@ import {DebugElement} from "./class/debugElement";
 import {PointDeVue} from "./class/PointDeVue";
 import {LoaderService} from "./class/MediaLoader";
 
-let timerBarBloc, timerBarContainerBloc, timerCanvas : HTMLCanvasElement;
+let timerBarBloc,
+  timerBarBufferBloc,
+  timerBarContainerBloc,
+  timerCanvas : HTMLCanvasElement;
 
 export function cacheDomElements(){
   timerBarBloc = document.getElementById('timer-bar');
+  timerBarBufferBloc = document.getElementById('timer-bar-buffer')
   timerBarContainerBloc = document.getElementById('timer-bar-container');
   timerCanvas = <HTMLCanvasElement> document.getElementById('timer-background');
 }
@@ -147,6 +151,8 @@ export function playVideo(){
   timerBarBloc.style.backgroundColor = g.pointDeVue[g.nextVideo].color;
   g.currentVideo = g.nextVideo;
   g.nextVideo = null;
+  g.nextShotFrame = null;
+  g.state.isWaiting = false;
   if(g.state.isPlaying){
     if (g.audio.voix.paused) g.audio.voix.play();
     for(let key in g.pointDeVue){
@@ -247,134 +253,6 @@ export function updateTimerBar(){
   timerBarBloc.style.width = (g.currentFrame * 100 / CST.FILM_DATA.FIN) + '%';
   timerBarBloc.style.borderRightWidth = window.innerWidth - timerBarBloc.offsetWidth + 'px';
 }
-
-// MAIN LOOP
-export function frameUpdate(){
-  let currPdv, key;
-  g.deltaTimestamp = performance.now() - g.currentTimestamp;
-  g.currentTimestamp = performance.now();
-  if(g.state.isPlaying && !g.state.isWaiting){
-    g.filmTimestamp += g.deltaTimestamp;
-    g.currentFrame = secondToFrame(g.filmTimestamp / 1000);
-  }
-
-  if(!g.state.isAudioLoaded){
-    let pdv, buffer;
-    let percent = 0;
-
-    for(key in g.pointDeVue){
-      pdv = g.pointDeVue[key];
-      buffer = pdv.getAudioBuffer();
-    }
-  }
-  else if(g.state.isLoading){
-    // if both audio are ready
-    if(g.audio.voix.readyState === 4){
-      // if no shot frame nearby
-      if(!g.nextShotFrame && !findClosestShotFrame(g.currentFrame)){
-        let ready = true;
-        for(key in g.pointDeVue){
-          if(ready && !g.pointDeVue[key].isReady()) ready = false;
-        }
-        if(ready){
-          g.nextShotFrame = null;
-          g.state.isWaiting = false;
-          playVideo();
-        }
-      }
-      // or if at next g.frame
-      else if(g.nextShotFrame && g.currentFrame > g.nextShotFrame){
-        let ready = true;
-        for(key in g.pointDeVue){
-          if(ready && !g.pointDeVue[key].isReady()) ready = false;
-        }
-        if(ready){
-          g.nextShotFrame = null;
-          g.state.isWaiting = false;
-          playVideo();
-        }
-        // debugger;
-      } else if(g.nextShotFrame && g.currentFrame == g.nextShotFrame){
-        g.pointDeVue[g.currentVideo].video.pause();
-      }
-      else if(findClosestShotFrame(g.currentFrame) && g.state.isWaiting){ // going back or init
-        let ready = true;
-        for(key in g.pointDeVue){
-          if(ready && !g.pointDeVue[key].isReady()) ready = false;
-        }
-        if(ready){
-          g.state.isWaiting = false;
-          playVideo();
-        }
-      }
-    }
-  }
-  else{
-    bufferUpdate();
-  }
-  //playback rate
-  for (key in g.pointDeVue){
-    currPdv = g.pointDeVue[key];
-    if (isPointDeVueAvailable(currPdv, g.currentFrame)) {
-      if(currPdv.button.classList.contains('hide') && g.currentFrame <= CST.FULL_END){
-        currPdv.button.classList.remove('hide');
-      }
-      if((g.frameLoop % 5) == 0 || g.state.isLoading){
-        //video
-        let timeDiff = frameToSecond(g.currentFrame) - frameToSecond(getAbsoluteFrame(currPdv));
-        let compensatingFrameRate: number = parseFloat(((Math.min(Math.max((timeDiff / 2 + 1), 0.33), 3.00))).toFixed(2));
-        if (compensatingFrameRate > .99 && compensatingFrameRate < 1.01) {
-          compensatingFrameRate = 1.00;
-        }
-        currPdv.video.playbackRate = compensatingFrameRate;
-      }
-      if (currPdv.video.paused && currPdv.video.currentTime <= frameToSecond(1) && g.state.isPlaying && !g.state.isLoading){
-        if(currPdv.video.readyState == 4 && currPdv.audio.readyState == 4){
-          currPdv.video.play();
-          currPdv.audio.play();
-        }
-        else {
-          console.error('well thats a good one, pov not loaded');
-        }
-      }
-    }
-    else if(key == g.currentVideo && key !== 'spectateur'){
-      currPdv.button.classList.add('hide');
-      selectVideo('spectateur');
-      playVideo();
-    }
-    else if (!currPdv.button.classList.contains('hide')){
-      currPdv.button.classList.add('hide');
-    }
-    currPdv.video.previousTime = currPdv.video.currentTime;
-  }
-
-  if(CST.DEBUG){
-    if(g.currentVideo){
-      g.debugElements.forEach((debugElement: DebugElement)=>{
-        debugElement.update();
-      });
-    }
-  }
-  g.frameLoop++;
-  if(g.frameLoop >= 60){
-    g.frameLoop = 0;
-  }
-  g.previousFrame = g.currentFrame;
-  if(g.currentFrame > CST.FULL_END && !g.pointDeVue[g.currentVideo].button.classList.contains('hide')){
-    g.pointDeVue[g.currentVideo].button.classList.add('hide');
-    g.pointDeVue[g.currentVideo].button.classList.remove('active');
-  }
-  updateTimerBar();
-  if(!isPointDeVueAvailable(g.pointDeVue.spectateur, g.currentFrame) && document.getElementById('loading-container').classList.contains('hide')){
-    document.getElementById('loading-container').classList.remove('hide');
-  }
-  else {
-    window.requestAnimationFrame(frameUpdate);
-  }
-  //video end
-}
-
 
 let fillStyles = {
   emma: "rgba(200, 200, 0, .9)",
