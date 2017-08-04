@@ -38,6 +38,7 @@ export class VideoApp{
       }
       window.requestAnimationFrame(this.frameUpdate);
     });
+    this.frameUpdate = this.frameUpdate.bind(this);
   }
   onLoad(loadTime: number){
     console.log('LOADER FULL LOAD EVENT');
@@ -105,6 +106,7 @@ export class VideoApp{
 
     }
     else {
+      console.log("audio loaded")
       let currPdv, key;
       g.deltaTimestamp = performance.now() - g.currentTimestamp;
       g.currentTimestamp = performance.now();
@@ -113,16 +115,7 @@ export class VideoApp{
         g.currentFrame = secondToFrame(g.filmTimestamp / 1000);
       }
 
-      // may be obsolete, since we don't launch frameUpdate() before all audio are loaded
-      if(!g.state.isAudioLoaded){
-        let pdv, buffer;
-        let percent = 0;
-        for(key in g.pointDeVue){
-          pdv = g.pointDeVue[key];
-          buffer = pdv.getAudioBuffer();
-        }
-      }
-      else if(g.state.isLoading){
+      if(g.state.isLoading){
         // are all points of view ready
         let ready = true;
         for(key in g.pointDeVue){
@@ -206,11 +199,9 @@ export class VideoApp{
       if(!isPointDeVueAvailable(g.pointDeVue.spectateur, g.currentFrame) && document.getElementById('loading-container').classList.contains('hide')){
         document.getElementById('loading-container').classList.remove('hide');
       }
-      else {
-        window.requestAnimationFrame(this.frameUpdate);
-      }
-      //video end
     }
+    window.requestAnimationFrame(this.frameUpdate);
+    //video end
   }
 
 }

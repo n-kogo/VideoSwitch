@@ -3,6 +3,7 @@ import '../../styles/style.scss';
 import {VideoApp} from "../index";
 import {cacheDomElements} from "../functions";
 import {AppLoader} from "../components/Loader";
+import {g} from "../globals";
 
 export class Film extends React.Component<any, any>{
   app: VideoApp;
@@ -10,7 +11,8 @@ export class Film extends React.Component<any, any>{
   constructor(props){
     super(props);
     this.state = {loadedPercent: 0};
-    this.app = new VideoApp();
+    this.onVideoUpdate = this.onVideoUpdate.bind(this);
+    this.onLoad = this.onLoad.bind(this);
     this.loadUpdate();
   }
   loadUpdate(){
@@ -22,7 +24,9 @@ export class Film extends React.Component<any, any>{
     this.videoUpdateCb.forEach(function(cb){
       cb(load);
     });
-    window.requestAnimationFrame(this.loadUpdate)
+    if(load < 100){
+      window.requestAnimationFrame(()=> this.loadUpdate())
+    }
   }
   render(){
     return (
@@ -65,7 +69,6 @@ export class Film extends React.Component<any, any>{
               <div id="timer-bar">
                 <div className="timer-bar-handle"></div>
               </div>
-              <div id="timer-bar-buffer"></div>
               <canvas id="timer-background" width="600" height="20"></canvas>
             </div>
           </div>
@@ -75,8 +78,10 @@ export class Film extends React.Component<any, any>{
   }
   componentDidMount(){
     cacheDomElements();
+    this.app = new VideoApp();
   }
   onLoad(loadTime){
+    console.log('ON LOAD FILM TSX <<<<');
     this.app.onLoad(loadTime);
   }
   onVideoUpdate(fn: Function){

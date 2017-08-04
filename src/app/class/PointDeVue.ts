@@ -40,7 +40,6 @@ export class PointDeVue{
         this.audio.volume = 1;
         clearInterval(this.currentInterval);
       }
-      console.log('volume', this.audio.volume, this.audio.currentTime, this.audio.paused);
     }, CST.FPS);
   }
 

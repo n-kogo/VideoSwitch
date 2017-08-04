@@ -25,9 +25,9 @@ export class AppLoader extends React.Component<any, any>{
     LoaderService.onUpdate((data)=>{
       this.onLoadUpdate({audio:data});
     });
-    // LoaderService.onUpdate((data)=>{
-    //   this.onLoadUpdate({video:data});
-    // })
+    props.onVideoLoadUpdate((data)=>{
+      this.onLoadUpdate({video: data});
+    });
   }
   onLoadUpdate(data: {video?: number, audio?: number}){
     if(!this.startTime) this.startTime = performance.now();

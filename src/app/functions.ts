@@ -96,7 +96,7 @@ export function setResolution(loadTime: number){
   if(w <= 900){
     r = 853;
   }
-  else if (w <= 1600){
+  else if (w <= 1700){
     r = 1280
   }
   else {
@@ -252,6 +252,7 @@ export function updateTimerBar(){
     timerContainer.classList.remove('show');
   timerBarBloc.style.width = (g.currentFrame * 100 / CST.FILM_DATA.FIN) + '%';
   timerBarBloc.style.borderRightWidth = window.innerWidth - timerBarBloc.offsetWidth + 'px';
+
 }
 
 let fillStyles = {
@@ -260,25 +261,98 @@ let fillStyles = {
   solvej: "rgba(250, 10, 10, .9)"
 };
 
+let max, maxIndex;
+export function indexOfMaxCollection(arr: Array<any>, key: string){
+  if (arr.length === 0) {
+    return -1;
+  }
+
+  max = arr[0][key];
+  maxIndex = 0;
+
+  for (var i = 1; i < arr.length; i++) {
+    if (arr[i][key] > max) {
+      maxIndex = i;
+      max = arr[i][key];
+    }
+  }
+
+  return maxIndex;
+}
+
+export function maxOfCollection(arr: Array<any>, key: string){
+  if (arr.length === 0) {
+    return -1;
+  }
+
+  max = arr[0][key];
+
+  for (var i = 1; i < arr.length; i++) {
+    if (arr[i][key] > max) {
+      max = arr[i][key];
+    }
+  }
+
+  return max;
+
+}
+
+export function findClosestRange(selectedRange: Array<number>, buffer: Array<Array<number>>) {
+  let scores; // function specific
+  scores = buffer.map((range)=>{
+    return {
+      score: Math.abs(range[0] - selectedRange[0]) + Math.abs(range[1] - selectedRange[1]),
+      range: range
+    }
+  });
+  return maxOfCollection(scores, 'score');
+}
+
 export function bufferUpdate(){
-  timerCanvas.width = window.innerWidth;
-  let ctx: CanvasRenderingContext2D = timerCanvas.getContext('2d');
-  ctx.clearRect(0, 0, timerCanvas.width, timerCanvas.height);
-  ctx.fillStyle = "#FFFFFF";
-  ctx.fillRect(0, 0, timerCanvas.width, timerCanvas.height);
   let pdv: PointDeVue, vid: HTMLVideoElement, buffer;
   let bIndex: number, start, end;
-  let i = 0;
-  for (let key in g.pointDeVue){
-    pdv = g.pointDeVue[key];
-    ctx.fillStyle = fillStyles[key];
-    buffer = pdv.getVideoBuffer();
-    for(let range of buffer){
-      start = (pdv.depart + range[0]) / CST.FILM_DATA.FIN;
-      end = (pdv.depart + range[1]) / CST.FILM_DATA.FIN;
-      // console.log(start, end, key);
-      ctx.fillRect(timerCanvas.width * start, (i / 3) *  timerCanvas.height, timerCanvas.width * end, (1 / 3) *  timerCanvas.height);
-    }
-    i++;
+  let buffers: {[s: string]: Array<Array<number>>} = {};
+  let mergedBuffer;
+  let ctx: CanvasRenderingContext2D = timerCanvas.getContext('2d');
+  timerCanvas.width = window.innerWidth;
+  ctx.clearRect(0, 0, timerCanvas.width, timerCanvas.height);
+  ctx.fillStyle = "#333";
+  ctx.fillRect(0, 0, timerCanvas.width, timerCanvas.height);
+  for(var key in g.pointDeVue){
+    buffer = g.pointDeVue[key].getVideoBuffer();
+    buffer = buffer.filter((range)=>{
+      return range[1] >= g.currentFrame;
+    });
+    buffers[key] = buffer;
   }
+  // mergedBuffer = [];
+
+  let bufferedRange = [this.currentFrame, this.currentFrame];
+  buffers.spectateur.forEach((range)=>{
+    let emmaRange = findClosestRange(range, buffers.emma);
+    let solvejRange = findClosestRange(range, buffers.solvej);
+    for(let i = range[0]; i <= range[1]; i++){
+      if(i > g.currentFrame){
+        if(i >= emmaRange[0] && i < emmaRange[1] && i >= solvejRange[0] && i < solvejRange[1]){
+          bufferedRange[1] = i;
+        }
+      }
+    }
+  });
+  // let i = 0;
+  // for (let key in g.pointDeVue){
+  //   pdv = g.pointDeVue[key];
+  //   ctx.fillStyle = fillStyles[key];
+  //   buffer = pdv.getVideoBuffer();
+  //   for(let range of buffer){
+  //     start = (pdv.depart + range[0]) / CST.FILM_DATA.FIN;
+  //     end = (pdv.depart + range[1]) / CST.FILM_DATA.FIN;
+  //     // console.log(start, end, key);
+  //     ctx.fillRect(timerCanvas.width * start, (i / 3) *  timerCanvas.height, timerCanvas.width * end, (1 / 3) *  timerCanvas.height);
+  //   }
+  //   i++;
+  // }
+
+  // final GRAY PART
+
 }
