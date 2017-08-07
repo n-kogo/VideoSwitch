@@ -3,12 +3,7 @@
   src:url('../assets/fonts/OpenSans-Light.ttf');
 }
 
-#timer-background{
-  position: absolute;
-  left: 0;
-  border:1px solid turquoise;
-  top: 0;
-}
+
 
 .app-container *.hide{
   opacity: 0;
@@ -143,10 +138,17 @@ video.active{
   box-shadow: 0 0 10px white;
 }
 
+#timer-background{
+  position: absolute;
+  left: 0;
+  z-index: 2;
+  //border:1px solid turquoise;
+  top: 28px;
+}
+
 #timer-bar-container {
   width: 100%;
   padding-top: 28px;
-  /*background: #333;*/
   height: 5px;
   left: 0;
   position: absolute;
@@ -175,6 +177,7 @@ video.active{
 #timer-bar{
   height: 100%;
   width: 50%;
+  z-index: 3;
   border-right: 0px solid #333;
   background: red;
   position: relative;

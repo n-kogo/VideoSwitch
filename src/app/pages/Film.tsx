@@ -69,7 +69,7 @@ export class Film extends React.Component<any, any>{
               <div id="timer-bar">
                 <div className="timer-bar-handle"></div>
               </div>
-              <canvas id="timer-background" width="600" height="20"></canvas>
+              <canvas id="timer-background" width="600" height="5"></canvas>
             </div>
           </div>
         </div>

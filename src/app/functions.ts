@@ -251,8 +251,7 @@ export function updateTimerBar(){
   else if ((window.innerHeight - g.mouse.y >= CST.TIMER_SHOW_DISTANCE && timerContainer.classList.contains('show')))
     timerContainer.classList.remove('show');
   timerBarBloc.style.width = (g.currentFrame * 100 / CST.FILM_DATA.FIN) + '%';
-  timerBarBloc.style.borderRightWidth = window.innerWidth - timerBarBloc.offsetWidth + 'px';
-
+  // timerBarBloc.style.borderRightWidth = window.innerWidth - timerBarBloc.offsetWidth + 'px';
 }
 
 let fillStyles = {
@@ -297,48 +296,27 @@ export function maxOfCollection(arr: Array<any>, key: string){
 
 }
 
-export function findClosestRange(selectedRange: Array<number>, buffer: Array<Array<number>>) {
-  let scores; // function specific
-  scores = buffer.map((range)=>{
-    return {
-      score: Math.abs(range[0] - selectedRange[0]) + Math.abs(range[1] - selectedRange[1]),
-      range: range
-    }
-  });
-  return maxOfCollection(scores, 'score');
+export function findClosestRange(pdv: PointDeVue, frame?: number) {
+  frame = frame - pdv.depart || g.currentFrame - pdv.depart;
+  let buffer = pdv.getVideoBuffer();
+  return buffer.find((range)=>{
+    return frame >= range[0] && frame < range[1]
+  })
 }
 
 export function bufferUpdate(){
   let pdv: PointDeVue, vid: HTMLVideoElement, buffer;
+  let pdvParams;
   let bIndex: number, start, end;
   let buffers: {[s: string]: Array<Array<number>>} = {};
   let mergedBuffer;
   let ctx: CanvasRenderingContext2D = timerCanvas.getContext('2d');
   timerCanvas.width = window.innerWidth;
-  ctx.clearRect(0, 0, timerCanvas.width, timerCanvas.height);
   ctx.fillStyle = "#333";
   ctx.fillRect(0, 0, timerCanvas.width, timerCanvas.height);
-  for(var key in g.pointDeVue){
-    buffer = g.pointDeVue[key].getVideoBuffer();
-    buffer = buffer.filter((range)=>{
-      return range[1] >= g.currentFrame;
-    });
-    buffers[key] = buffer;
-  }
   // mergedBuffer = [];
 
-  let bufferedRange = [this.currentFrame, this.currentFrame];
-  buffers.spectateur.forEach((range)=>{
-    let emmaRange = findClosestRange(range, buffers.emma);
-    let solvejRange = findClosestRange(range, buffers.solvej);
-    for(let i = range[0]; i <= range[1]; i++){
-      if(i > g.currentFrame){
-        if(i >= emmaRange[0] && i < emmaRange[1] && i >= solvejRange[0] && i < solvejRange[1]){
-          bufferedRange[1] = i;
-        }
-      }
-    }
-  });
+  // Debug to see each individual buffer from each video
   // let i = 0;
   // for (let key in g.pointDeVue){
   //   pdv = g.pointDeVue[key];
@@ -346,12 +324,36 @@ export function bufferUpdate(){
   //   buffer = pdv.getVideoBuffer();
   //   for(let range of buffer){
   //     start = (pdv.depart + range[0]) / CST.FILM_DATA.FIN;
-  //     end = (pdv.depart + range[1]) / CST.FILM_DATA.FIN;
+  //     end = (range[1] - range[0]) / CST.FILM_DATA.FIN;
   //     // console.log(start, end, key);
   //     ctx.fillRect(timerCanvas.width * start, (i / 3) *  timerCanvas.height, timerCanvas.width * end, (1 / 3) *  timerCanvas.height);
   //   }
   //   i++;
   // }
+
+  let specRange = findClosestRange(g.pointDeVue.spectateur);
+
+  let bufferedEnd = specRange[1];
+  if(isPointDeVueAvailable(g.pointDeVue.emma, g.currentFrame)){
+    let emmaRange = findClosestRange(g.pointDeVue.emma);
+    if(!emmaRange){
+      console.log(emmaRange, g.currentFrame, 'will crash')
+    }
+    emmaRange[0] += CST.POINTS_DE_VUE.find(pdv=> pdv.name === 'emma').depart;
+    emmaRange[1] += CST.POINTS_DE_VUE.find(pdv=> pdv.name === 'emma').depart;
+    bufferedEnd = Math.min(bufferedEnd, emmaRange[1])
+  }
+  if(isPointDeVueAvailable(g.pointDeVue.solvej, g.currentFrame)){
+    let solvejRange = findClosestRange(g.pointDeVue.solvej);
+    solvejRange[0] += CST.POINTS_DE_VUE.find(pdv=> pdv.name === 'solvej').depart;
+    solvejRange[1] += CST.POINTS_DE_VUE.find(pdv=> pdv.name === 'solvej').depart;
+  }
+  let bufferedRange = [g.currentFrame, bufferedEnd];
+  start = bufferedRange[0] / CST.FILM_DATA.FIN;
+  end = (bufferedRange[1] - bufferedRange[0]) / CST.FILM_DATA.FIN;
+  ctx.fillStyle = "rgba(100, 100 ,100, .7)";
+  ctx.fillRect(timerCanvas.width * start, 0, timerCanvas.width * end, timerCanvas.height);
+
 
   // final GRAY PART
 

@@ -106,7 +106,7 @@ export class VideoApp{
 
     }
     else {
-      console.log("audio loaded")
+      // console.log("audio loaded")
       let currPdv, key;
       g.deltaTimestamp = performance.now() - g.currentTimestamp;
       g.currentTimestamp = performance.now();
@@ -142,6 +142,7 @@ export class VideoApp{
       else{
         bufferUpdate();
       }
+
       //playback rate
       for (key in g.pointDeVue){
         currPdv = g.pointDeVue[key];
@@ -149,9 +150,12 @@ export class VideoApp{
           if(currPdv.button.classList.contains('hide') && g.currentFrame <= CST.FULL_END){
             currPdv.button.classList.remove('hide');
           }
+
+          //TODO: implement buffering state
           if((g.frameLoop % 5) == 0 || g.state.isLoading){
             //video
             let timeDiff = frameToSecond(g.currentFrame) - frameToSecond(getAbsoluteFrame(currPdv));
+            console.log('timediff on ', key, timeDiff)
             let compensatingFrameRate: number = parseFloat(((Math.min(Math.max((timeDiff / 2 + 1), 0.33), 3.00))).toFixed(2));
             if (compensatingFrameRate > .99 && compensatingFrameRate < 1.01) {
               compensatingFrameRate = 1.00;
@@ -177,7 +181,8 @@ export class VideoApp{
           currPdv.button.classList.add('hide');
         }
         currPdv.video.previousTime = currPdv.video.currentTime;
-      }
+      } // end of playback rate
+
 
       if(CST.DEBUG){
         if(g.currentVideo){
