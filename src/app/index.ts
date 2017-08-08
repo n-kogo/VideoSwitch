@@ -152,6 +152,10 @@ export class VideoApp{
           }
 
           //TODO: implement buffering state
+          let currentFramePdv = getAbsoluteFrame(currPdv);
+          if(g.currentFrame - currentFramePdv > 2){
+            g.state.isBuffering = truef
+          }
           if((g.frameLoop % 5) == 0 || g.state.isLoading){
             //video
             let timeDiff = frameToSecond(g.currentFrame) - frameToSecond(getAbsoluteFrame(currPdv));
