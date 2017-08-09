@@ -58,8 +58,14 @@ export class AppLoader extends React.Component<any, any>{
     };
     return (
       <div>
+        <h3>
+          Chargement
+        </h3>
         <div className="loading-bar-container">
-          <div className="loading-bar" style={this.barStyle}>{this.state.loadedPercent + '%'}</div>
+          <div className="loading-bar" style={this.barStyle}></div>
+        </div>
+        <div className="loading-bar-percent">
+          {this.state.loadedPercent + '%'}
         </div>
       </div>
     )

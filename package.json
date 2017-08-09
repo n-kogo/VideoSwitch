@@ -6,9 +6,10 @@
   "scripts": {
     "build": "webpack -p --progress --colors",
     "dev": "webpack-dev-server --debug --hot --inline --colors --port 3000 --open",
-    "watch": "webpack --watch --config webpack.dev.config.js"
+    "debug": "cross-env DEBUG=true webpack-dev-server --debug --hot --inline --colors --port 3000 --open"
   },
   "devDependencies": {
+    "@types/node": "^8.0.19",
     "css-loader": "^0.28.4",
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^0.11.2",
@@ -24,6 +25,7 @@
   },
   "dependencies": {
     "@types/react": "^16.0.0",
+    "cross-env": "^5.0.4",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-redux": "^5.0.5",

@@ -1,5 +1,6 @@
 export const CST = {
   DEBUG: false,
+  // DEBUG: process.env.DEBUG,
   FULL_END: 6585,
   TIMER_SHOW_DISTANCE: 34,
   OVERLAY_DATA: {

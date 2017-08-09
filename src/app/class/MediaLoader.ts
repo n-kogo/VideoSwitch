@@ -37,18 +37,21 @@ export class MediaLoader {
     let globalLoad = 0;
     for(let resource of this._resources){
       globalLoad += resource.loadState;
-      if(resource.loadState < 100 && resource.media.duration){
+      if(resource.loadState < 99.9 && resource.media.duration){
         buffer = getMediaBuffer(resource.media);
         duration = secondToFrame(resource.media.duration);
         loadedPercent = buffer.reduce(function(loadedPercent, range, i, buffer){
           return loadedPercent + (range[1] - range[0]) * 100 /  duration;
         }, 0);
         percentPlayed = secondToFrame(resource.media.currentTime) * 100 / duration;
-        let pbr = 5;
         if(loadedPercent - percentPlayed > 20){
           resource.media.currentTime = resource.media.duration * (loadedPercent - 0.1) / 100;
+          // console.log('moved audio Load POV 20% up')
         }
-        resource.media.playbackRate = !isNaN(pbr) ? pbr : 5;
+        // else {
+        //   console.log(percentPlayed, loadedPercent, resource.media.src)
+        // }
+        resource.media.playbackRate = 4;
         resource.loadState = loadedPercent;
         // console.log(resource.media.src, loadedPercent, percentPlayed);
         // console.log('paused:', resource.media.paused, percentPlayed, 'pbr:', pbr, resource.media.src, loadedPercent);

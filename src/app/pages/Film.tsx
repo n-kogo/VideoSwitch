@@ -1,6 +1,6 @@
 import * as React from "react";
 import '../../styles/style.scss';
-import {VideoApp} from "../index";
+import {VideoApp} from "../VideoApp";
 import {cacheDomElements} from "../functions";
 import {AppLoader} from "../components/Loader";
 import {g} from "../globals";
@@ -81,7 +81,6 @@ export class Film extends React.Component<any, any>{
     this.app = new VideoApp();
   }
   onLoad(loadTime){
-    console.log('ON LOAD FILM TSX <<<<');
     this.app.onLoad(loadTime);
   }
   onVideoUpdate(fn: Function){

@@ -98,6 +98,11 @@ module.exports = {
       filename: 'styles.css',
       disable: !isProduction
     })
+    // new webpack.DefinePlugin({
+    //   'process.env': {
+    //     'DEBUG': JSON.stringify(process.env.DEBUG)
+    //   }
+    // })
   ],
   devServer: {
     // open: true, // to open the local server in browser

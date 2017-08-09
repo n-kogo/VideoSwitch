@@ -91,6 +91,7 @@ export function resize(){
 }
 
 export function setResolution(loadTime: number){
+  console.info('SET RESOLUTION', loadTime)
   let w = window.innerWidth;
   let r = 0;
   if(w <= 900){
@@ -103,10 +104,10 @@ export function setResolution(loadTime: number){
     r = 1920
   }
 
-  if(loadTime > 1000){
+  if(loadTime > 1500){
     r = Math.min(r, 1280)
   }
-  else if (loadTime > 3000){
+  if (loadTime > 4000){
     r = Math.min(r, 853)
   }
   g.resolution = r;
@@ -115,14 +116,14 @@ export function setResolution(loadTime: number){
 // load new video
 export function selectVideo(newVideoName: string, forced?: boolean){
   if (newVideoName in g.pointDeVue
-      && isPointDeVueAvailable(g.pointDeVue[newVideoName], g.currentFrame)
-      && (
-          !g.currentVideo
-          || (
-              g.currentVideo
-              && (newVideoName !== g.currentVideo || forced)
-          )
+    && isPointDeVueAvailable(g.pointDeVue[newVideoName], g.currentFrame)
+    && (
+      !g.currentVideo
+      || (
+        g.currentVideo
+        && (newVideoName !== g.currentVideo || forced)
       )
+    )
   ){
     g.nextVideo = newVideoName;
     g.pointDeVue[g.nextVideo].button.classList.add('loading');
@@ -135,7 +136,9 @@ export function selectVideo(newVideoName: string, forced?: boolean){
 }
 
 //once loaded make the video start
-export function playVideo(){
+export function playNextPOV(){
+  // TODO: is it the best way ?..
+  if(!g.nextVideo) g.nextVideo = g.currentVideo;
   if(g.currentVideo !== null){
     if(g.pointDeVue[g.currentVideo].video.paused && g.state.isPlaying)
       g.pointDeVue[g.currentVideo].video.play();
@@ -153,7 +156,7 @@ export function playVideo(){
   g.nextVideo = null;
   g.nextShotFrame = null;
   g.state.isWaiting = false;
-  if(g.state.isPlaying){
+  if(g.state.isPlaying ){
     if (g.audio.voix.paused) g.audio.voix.play();
     for(let key in g.pointDeVue){
       if(isPointDeVueAvailable(g.pointDeVue[key], g.currentFrame)){
@@ -163,6 +166,34 @@ export function playVideo(){
     }
   }
   g.state.isLoading = false;
+}
+
+export function pauseForBuffer(pdv: PointDeVue){
+  console.log('called a pause for buffer ()!')
+  g.state.bufferedPOV = pdv;
+  // g.state.isBuffering = true;
+  if(g.state.isPlaying && !g.state.isLoading){
+    g.audio.voix.pause();
+    // g.audio.voix.currentTime = g.currentFrame;
+    for(let key in g.pointDeVue){
+      g.pointDeVue[key].video.pause();
+      // g.pointDeVue[key].video.currentTime = g.currentFrame;
+      g.pointDeVue[key].audio.pause();
+      // g.pointDeVue[key].audio.currentTime = g.currentFrame;
+    }
+  }
+  moveVideoTimer(g.currentFrame);
+}
+
+export function playAfterBuffer(){
+  if(g.state.isPlaying){
+    g.audio.voix.play();
+    for(let key in g.pointDeVue){
+      g.pointDeVue[key].video.play();
+      g.pointDeVue[key].audio.play();
+    }
+  }
+
 }
 
 export function moveVideoTimer(frame){
@@ -300,7 +331,7 @@ export function findClosestRange(pdv: PointDeVue, frame?: number) {
   frame = frame - pdv.depart || g.currentFrame - pdv.depart;
   let buffer = pdv.getVideoBuffer();
   return buffer.find((range)=>{
-    return frame >= range[0] && frame < range[1]
+    return frame >= range[0] && frame <= range[1]
   })
 }
 
@@ -332,29 +363,47 @@ export function bufferUpdate(){
   // }
 
   let specRange = findClosestRange(g.pointDeVue.spectateur);
+  let bufferedEnd;
+  if(!specRange){
+    console.log('spec range not found', g.pointDeVue.spectateur.getVideoBuffer(), g.currentFrame)
+    bufferedEnd = g.currentFrame;
+  }
+  else{
+    if (specRange[1] ==  g.currentFrame){
+      console.log('[bufferUpdate()]: found end of buffer = currentframe, gonna break')
+    }
+    bufferedEnd = specRange[1];
+  }
 
-  let bufferedEnd = specRange[1];
   if(isPointDeVueAvailable(g.pointDeVue.emma, g.currentFrame)){
     let emmaRange = findClosestRange(g.pointDeVue.emma);
     if(!emmaRange){
-      console.log(emmaRange, g.currentFrame, 'will crash')
+      console.log(emmaRange, g.currentFrame, 'emma range is out of bounds, most likely behind frame');
+      bufferedEnd = Math.min(bufferedEnd, g.currentFrame);
     }
-    emmaRange[0] += CST.POINTS_DE_VUE.find(pdv=> pdv.name === 'emma').depart;
-    emmaRange[1] += CST.POINTS_DE_VUE.find(pdv=> pdv.name === 'emma').depart;
-    bufferedEnd = Math.min(bufferedEnd, emmaRange[1])
+    else {
+      emmaRange[0] += CST.POINTS_DE_VUE.find(pdv=> pdv.name === 'emma').depart;
+      emmaRange[1] += CST.POINTS_DE_VUE.find(pdv=> pdv.name === 'emma').depart;
+      bufferedEnd = Math.min(bufferedEnd, emmaRange[1])
+    }
   }
   if(isPointDeVueAvailable(g.pointDeVue.solvej, g.currentFrame)){
     let solvejRange = findClosestRange(g.pointDeVue.solvej);
-    solvejRange[0] += CST.POINTS_DE_VUE.find(pdv=> pdv.name === 'solvej').depart;
-    solvejRange[1] += CST.POINTS_DE_VUE.find(pdv=> pdv.name === 'solvej').depart;
+    if(!solvejRange){
+      console.log(solvejRange, g.currentFrame, 'solvej range is out of bounds, most likely behind frame');
+      bufferedEnd = Math.min(bufferedEnd, g.currentFrame);
+    }
+    else{
+      solvejRange[0] += CST.POINTS_DE_VUE.find(pdv=> pdv.name === 'solvej').depart;
+      solvejRange[1] += CST.POINTS_DE_VUE.find(pdv=> pdv.name === 'solvej').depart;
+      bufferedEnd = Math.min(bufferedEnd, solvejRange[1])
+    }
   }
   let bufferedRange = [g.currentFrame, bufferedEnd];
   start = bufferedRange[0] / CST.FILM_DATA.FIN;
   end = (bufferedRange[1] - bufferedRange[0]) / CST.FILM_DATA.FIN;
   ctx.fillStyle = "rgba(100, 100 ,100, .7)";
   ctx.fillRect(timerCanvas.width * start, 0, timerCanvas.width * end, timerCanvas.height);
-
-
   // final GRAY PART
 
 }

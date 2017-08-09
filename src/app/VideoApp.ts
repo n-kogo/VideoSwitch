@@ -3,7 +3,7 @@ import {CST} from "./const";
 import {
   bufferUpdate,
   drawDebugTimeline, findClosestShotFrame, frameToSecond,
-  getAbsoluteFrame, isPointDeVueAvailable, launchTimerEvents, moveVideoTimer, playVideo, resize,
+  getAbsoluteFrame, isPointDeVueAvailable, launchTimerEvents, moveVideoTimer, pauseForBuffer, playNextPOV, resize,
   secondToFrame, selectVideo,
   setResolution,
   spawnPointDeVue,
@@ -33,6 +33,7 @@ export class VideoApp{
     LoaderService.load(g.audio.voix);
     LoaderService.update();
     LoaderService.onLoad((loadTime)=>{
+      setResolution(loadTime);
       for(let key in g.pointDeVue){
         g.pointDeVue[key].load();
       }
@@ -43,7 +44,6 @@ export class VideoApp{
   onLoad(loadTime: number){
     console.log('LOADER FULL LOAD EVENT');
     g.audio.voix.volume = 1;
-    setResolution(loadTime);
     g.state.isAudioLoaded = true;
     this.inputHandle();
     launchTimerEvents();
@@ -103,7 +103,7 @@ export class VideoApp{
   }
   frameUpdate(){
     if(!g.state.isAudioLoaded){
-
+      //TODO: remove this state
     }
     else {
       // console.log("audio loaded")
@@ -115,6 +115,50 @@ export class VideoApp{
         g.currentFrame = secondToFrame(g.filmTimestamp / 1000);
       }
 
+      //playback rate
+      for (key in g.pointDeVue){
+        currPdv = g.pointDeVue[key];
+        if (isPointDeVueAvailable(currPdv, g.currentFrame)) {
+          if(currPdv.button.classList.contains('hide') && g.currentFrame <= CST.FULL_END){
+            currPdv.button.classList.remove('hide');
+          }
+
+          let currentFramePdv = getAbsoluteFrame(currPdv);
+          if(g.currentFrame - currentFramePdv > 2){
+            pauseForBuffer(currPdv);
+          }
+          // console.log('timediff on ', key, g.currentFrame - currentFramePdv, g.currentFrame, currentFramePdv)
+          if((g.frameLoop % 5) == 0 || g.state.isLoading){
+            //video
+            let timeDiff = frameToSecond(g.currentFrame) - frameToSecond(currentFramePdv);
+            let compensatingFrameRate: number = parseFloat(((Math.min(Math.max((timeDiff / 2 + 1), 0.33), 3.00))).toFixed(2));
+            if (compensatingFrameRate > .99 && compensatingFrameRate < 1.01) {
+              compensatingFrameRate = 1.00;
+            }
+            currPdv.video.playbackRate = compensatingFrameRate;
+          }
+          if (currPdv.video.paused && currPdv.video.currentTime <= frameToSecond(1) && g.state.isPlaying && !g.state.isLoading){
+            if(currPdv.video.readyState == 4 && currPdv.audio.readyState == 4){
+              currPdv.video.play();
+              currPdv.audio.play();
+            }
+            else {
+              console.error('well thats a good one, pov not loaded');
+            }
+          }
+        }
+        else if(key == g.currentVideo && key !== 'spectateur'){
+          currPdv.button.classList.add('hide');
+          selectVideo('spectateur');
+          playNextPOV();
+        }
+        else if (!currPdv.button.classList.contains('hide')){
+          currPdv.button.classList.add('hide');
+        }
+        currPdv.video.previousTime = currPdv.video.currentTime;
+      } // end of playback rate
+
+      //loading checks
       if(g.state.isLoading){
         // are all points of view ready
         let ready = true;
@@ -137,56 +181,11 @@ export class VideoApp{
         else if(g.nextShotFrame && g.currentFrame > g.nextShotFrame){
           validState = true;
         }
-        if(ready && validState) playVideo();
+        if(ready && validState) playNextPOV();
       }
       else{
         bufferUpdate();
       }
-
-      //playback rate
-      for (key in g.pointDeVue){
-        currPdv = g.pointDeVue[key];
-        if (isPointDeVueAvailable(currPdv, g.currentFrame)) {
-          if(currPdv.button.classList.contains('hide') && g.currentFrame <= CST.FULL_END){
-            currPdv.button.classList.remove('hide');
-          }
-
-          //TODO: implement buffering state
-          let currentFramePdv = getAbsoluteFrame(currPdv);
-          if(g.currentFrame - currentFramePdv > 2){
-            g.state.isBuffering = truef
-          }
-          if((g.frameLoop % 5) == 0 || g.state.isLoading){
-            //video
-            let timeDiff = frameToSecond(g.currentFrame) - frameToSecond(getAbsoluteFrame(currPdv));
-            console.log('timediff on ', key, timeDiff)
-            let compensatingFrameRate: number = parseFloat(((Math.min(Math.max((timeDiff / 2 + 1), 0.33), 3.00))).toFixed(2));
-            if (compensatingFrameRate > .99 && compensatingFrameRate < 1.01) {
-              compensatingFrameRate = 1.00;
-            }
-            currPdv.video.playbackRate = compensatingFrameRate;
-          }
-          if (currPdv.video.paused && currPdv.video.currentTime <= frameToSecond(1) && g.state.isPlaying && !g.state.isLoading){
-            if(currPdv.video.readyState == 4 && currPdv.audio.readyState == 4){
-              currPdv.video.play();
-              currPdv.audio.play();
-            }
-            else {
-              console.error('well thats a good one, pov not loaded');
-            }
-          }
-        }
-        else if(key == g.currentVideo && key !== 'spectateur'){
-          currPdv.button.classList.add('hide');
-          selectVideo('spectateur');
-          playVideo();
-        }
-        else if (!currPdv.button.classList.contains('hide')){
-          currPdv.button.classList.add('hide');
-        }
-        currPdv.video.previousTime = currPdv.video.currentTime;
-      } // end of playback rate
-
 
       if(CST.DEBUG){
         if(g.currentVideo){

@@ -13,7 +13,9 @@ export let g:{
     isPlaying: boolean,
     isLoading: boolean,
     isAudioLoaded: boolean,
-    isWaiting: boolean
+    isWaiting: boolean,
+    isBuffering: boolean,
+    bufferedPOV: any,
   },
   currentVideo: string;
   nextVideo: string;
@@ -41,7 +43,9 @@ export let g:{
     isPlaying: false,
     isLoading: false,
     isWaiting: false,
-    isAudioLoaded: false
+    isAudioLoaded: false,
+    isBuffering: false,
+    bufferedPOV: null
   },
   currentVideo: null,
   nextVideo: null,

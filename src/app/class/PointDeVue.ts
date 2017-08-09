@@ -10,6 +10,7 @@ export class PointDeVue{
   delta: number =  1 / (.75 * CST.FPS);
   currentInterval: any;
   src: string;
+  buffer: Array<[number, number]> = [];
   constructor(public tag, public depart: number, public fin: number, public color: string){
     this.video = <HTMLVideoElement> document.getElementById(tag);
     this.video.volume = 0;
@@ -45,19 +46,21 @@ export class PointDeVue{
 
   isReady(){
     // TODO: determine in audio.readystate is useful
+    this.getVideoBuffer();
+
     return this.audio.readyState == 4 && this.video.readyState == 4;
   }
 
   getVideoBuffer(): Array<[number, number]>{
-    let arr = [];
+    this.buffer = [];
     let l = this.video.buffered.length;
     while(l--){
-      arr.push([
+      this.buffer.push([
         secondToFrame(this.video.buffered.start(l)),
         secondToFrame(this.video.buffered.end(l))
       ])
     }
-    return arr;
+    return this.buffer;
   }
 
   load(){
