@@ -80,6 +80,10 @@ export class VideoApp{
       g.mouse.y = e.pageY;
     };
   }
+
+  onIntroComplete(){
+    g.state.isIntroComplete = true;
+  }
   inputHandle(){
     //key handle
     window.addEventListener('keydown', function(event){
@@ -102,7 +106,7 @@ export class VideoApp{
     });
   }
   frameUpdate(){
-    if(!g.state.isAudioLoaded){
+    if(!g.state.isAudioLoaded || !g.state.isIntroComplete){
       //TODO: remove this state
     }
     else {

@@ -4,6 +4,7 @@ import {VideoApp} from "../VideoApp";
 import {cacheDomElements} from "../functions";
 import {AppLoader} from "../components/Loader";
 import {g} from "../globals";
+import {IntroText} from "../components/IntroText";
 
 export class Film extends React.Component<any, any>{
   app: VideoApp;
@@ -13,6 +14,7 @@ export class Film extends React.Component<any, any>{
     this.state = {loadedPercent: 0};
     this.onVideoUpdate = this.onVideoUpdate.bind(this);
     this.onLoad = this.onLoad.bind(this);
+    this.onIntroComplete = this.onIntroComplete.bind(this);
     this.loadUpdate();
   }
   loadUpdate(){
@@ -35,17 +37,8 @@ export class Film extends React.Component<any, any>{
           <AppLoader onLoad={this.onLoad} onVideoLoadUpdate={this.onVideoUpdate} />
           {/*<div className="pulse-loader"></div>*/}
         </div>
+        <IntroText ref="intro" onComplete={this.onIntroComplete} />
         <div className="app-container">
-          <div id="overlay">
-            <div className="min-container">
-              <div className="overlay-buttons">
-                <div className="button emma"></div>
-                <div className="button spectateur button-spectateur"></div>
-                <div className="button solvej"></div>
-              </div>
-              <h3 className="overlay-title">Cliquez pour changer de <br /> point de vue </h3>
-            </div>
-          </div>
           <div id="pause-overlay">
           </div>
           <div className="container-video" id="container-video">
@@ -80,8 +73,13 @@ export class Film extends React.Component<any, any>{
     cacheDomElements();
     this.app = new VideoApp();
   }
+  //pass callbacks to app through reacgt components
   onLoad(loadTime){
+    (this.refs.intro as IntroText).start();
     this.app.onLoad(loadTime);
+  }
+  onIntroComplete(){
+    this.app.onIntroComplete();
   }
   onVideoUpdate(fn: Function){
     this.videoUpdateCb.push(fn);

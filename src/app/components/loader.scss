@@ -1,24 +1,24 @@
-.loading-bar-container{
-  width: 500px;
-  height: 10px;
-  background-color: #222;
-  position: relative;
-}
-.loading-bar{
-  height: 100%;
-  background-color: turquoise;
-}
-
-h3{
-  text-transform: uppercase;
-  color: #666;
-  font-style: italic;
-  font-family: "Open Sans", Arial, sans-serif;
-}
-
-.loading-bar-percent{
-  color: #CCC;
-  margin-top: 15px;
-  text-align: center;
-  font-size: 1.3em;
+.loading{
+  &__container{
+    width: 500px;
+    height: 10px;
+    background-color: #222;
+    position: relative;
+  }
+  &__bar{
+    height: 100%;
+    background-color: turquoise;
+  }
+  &__percent{
+    color: #CCC;
+    margin-top: 15px;
+    text-align: center;
+    font-size: 1.3em;
+  }
+  h3{
+    text-transform: uppercase;
+    color: #666;
+    font-style: italic;
+    font-family: "OpenSans", Arial, sans-serif;
+  }
 }
