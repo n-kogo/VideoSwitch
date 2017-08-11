@@ -1,6 +1,7 @@
 import {CST} from "./const";
 import {DebugElement} from "./class/debugElement";
 import {PointDeVue} from "./class/PointDeVue";
+import {Tutorial} from "./components/Tutorial";
 
 export let g:{
   debugElements: Array<DebugElement>;
@@ -32,7 +33,8 @@ export let g:{
   mouse: {
     x: number,
     y: number
-  }
+  },
+  tutorial: Tutorial | null,
 } = {
   debugElements:[],
   pointDeVue: {},
@@ -63,5 +65,6 @@ export let g:{
   mouse: {
     x: 0,
     y: 0,
-  }
+  },
+  tutorial: null
 };

@@ -5,6 +5,7 @@ import {cacheDomElements} from "../functions";
 import {AppLoader} from "../components/Loader";
 import {g} from "../globals";
 import {IntroText} from "../components/IntroText";
+import {Tutorial} from "../components/Tutorial";
 
 export class Film extends React.Component<any, any>{
   app: VideoApp;
@@ -41,6 +42,7 @@ export class Film extends React.Component<any, any>{
         <div className="app-container">
           <div id="pause-overlay">
           </div>
+          <Tutorial ref="tutorial"/>
           <div className="container-video" id="container-video">
             <video width="400" height="222" id="spectateur">
             </video>
@@ -79,7 +81,7 @@ export class Film extends React.Component<any, any>{
     this.app.onLoad(loadTime);
   }
   onIntroComplete(){
-    this.app.onIntroComplete();
+    this.app.onIntroComplete(this.refs.tutorial as Tutorial);
   }
   onVideoUpdate(fn: Function){
     this.videoUpdateCb.push(fn);

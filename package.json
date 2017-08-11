@@ -4,7 +4,7 @@
   "description": "Play and switch between multiple video and audio files",
   "main": "scripts.js",
   "scripts": {
-    "build": "webpack -p --progress --colors",
+    "build": "webpack --progress --colors",
     "dev": "webpack-dev-server --debug --hot --inline --colors --port 3000 --open",
     "debug": "cross-env DEBUG=true webpack-dev-server --debug --hot --inline --colors --port 3000 --open"
   },

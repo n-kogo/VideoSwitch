@@ -12,6 +12,7 @@ import {
 import {DebugElement} from "./class/debugElement";
 import {LoaderService} from "./class/MediaLoader";
 import '../styles/style.scss';
+import {Tutorial} from "./components/Tutorial";
 
 
 /*
@@ -23,6 +24,7 @@ jouer et par dessus. Animer le bouton
 */
 
 export class VideoApp{
+  tutorial: Tutorial;
   constructor(){
     CST.POINTS_DE_VUE.forEach(pointDeVue=>{
       spawnPointDeVue(pointDeVue)
@@ -31,7 +33,7 @@ export class VideoApp{
     g.audio.voix.src = "assets/audio/voix.mp3";
     //audio loading service
     LoaderService.load(g.audio.voix);
-    LoaderService.update();
+    // LoaderService.update();
     LoaderService.onLoad((loadTime)=>{
       setResolution(loadTime);
       for(let key in g.pointDeVue){
@@ -81,7 +83,9 @@ export class VideoApp{
     };
   }
 
-  onIntroComplete(){
+  onIntroComplete(tutorial: Tutorial){
+    this.tutorial = tutorial;
+    g.tutorial = tutorial;
     g.state.isIntroComplete = true;
   }
   inputHandle(){
@@ -189,6 +193,12 @@ export class VideoApp{
       }
       else{
         bufferUpdate();
+        if(g.state.isPlaying && g.currentFrame >= this.tutorial.params.start
+          && g.currentFrame < this.tutorial.params.start + this.tutorial.params.duration
+          && this.tutorial.tl.paused()
+        ){
+          this.tutorial.start(g.currentFrame);
+        }
       }
 
       if(CST.DEBUG){

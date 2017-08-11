@@ -212,6 +212,10 @@ export function moveVideoTimer(frame){
   g.currentFrame = frame;
   g.previousFrame = frame - 1;
   g.state.isLoading = true;
+  if(g.tutorial){
+    g.tutorial.moveTo(g.currentFrame);
+    g.tutorial.pause();
+  }
 }
 
 export function findClosestShotFrame(frame){
@@ -236,12 +240,16 @@ export function drawDebugTimeline(){
 }
 
 export function toggleVideo(){
+  console.log('TOGGLE VIDEO', g.tutorial)
   g.state.isPlaying = !g.state.isPlaying;
   if(g.state.isPlaying){
     if (g.audio.voix.paused) g.audio.voix.play();
+    if(g.tutorial) g.tutorial.play();
   }
   else {
     g.audio.voix.pause();
+    console.log('should pause')
+    if(g.tutorial) g.tutorial.pause();
   }
   for(let key in g.pointDeVue){
     if(g.state.isPlaying && isPointDeVueAvailable(g.pointDeVue[key], g.currentFrame)){
