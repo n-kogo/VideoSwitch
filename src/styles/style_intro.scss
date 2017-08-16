@@ -10,24 +10,10 @@
   /*src:url('assets/fonts/OpenSans-light.ttf');*/
 /*}*/
 
-.home{
-  margin: 0;
-  padding: 0;
-  color: white;
-  background-color: black;
-  /*background-image: url(assets/images/titre_fond.jpg);*/
-  width: 100%;
-  font-family: 'OpenSans', sans-serif;
-  height: 100vh;
-  overflow: hidden;
-  position: relative;
-}
-
 #background-video{
   z-index: 3;
 }
-body{
-}
+
 .coming-date{
   width:  500px;
   box-sizing: border-box;
@@ -42,14 +28,6 @@ a{
 
 a:visited{
   color:white;
-}
-
-.shader{
-  z-index: 5;
-  opacity: 1;
-  position: relative;
-  width:100%;
-  height: 100%;
 }
 
 h1{
@@ -101,34 +79,76 @@ p{
   margin: 0;
   padding: 0;
 }
-.content{
-  background-color: rgba(0, 0, 0, .3);
-  position: absolute;
-  top: 0;
-  overflow-y: auto;
-  z-index: 10;
+
+.navigation{
   display: flex;
-  padding: 20px;
-  box-sizing: border-box;
   flex-direction: column;
-  align-items: center;
-  width: 100%;
-  text-align: center;
-  height: 100%;
+  height: 100vh;
+  #background-video{
+
+  }
+  &__content{
+    background-color: rgba(0, 0, 0, .3);
+    top: 0;
+    position: relative;
+    z-index: 10;
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    width: 100%;
+    flex: 1 1 auto;
+    text-align: center;
+  }
+
+  &__shader{
+    flex: 1 1 auto;
+    z-index: 5;
+    opacity: 1;
+    position: relative;
+    width:100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+  &__footer{
+    background-color: rgb(10, 10 ,10);
+    width: 100%;
+    z-index: 11;
+    position: relative;
+    display: flex;
+    flex: 0 0 auto;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  &__element{
+    font-size: 15px;
+    padding: 8px;
+    border-right: 1px solid white;
+    display: flex;
+    background-color: #050505;
+    background-image: -webkit-linear-gradient(left, rgba(10, 10 ,10, 1) , rgba(10, 10, 10, 0));
+    transition: all .2s;
+    color: #ccc;
+    justify-content: center;
+    &:visited{ color: #ccc;}
+    &:hover{
+      border-right: 1px solid turquoise;
+      transition: background .35s, border-right .7s;
+      background-color: #151515;
+      color: white;
+    }
+  }
+  &__external{
+    display: inline-block;
+    height: 22px;
+    img{
+      width: 22px;
+      height: 22px;
+    };
+    margin: 0 6px;
+  }
 }
 
-.footer{
-  border-top: 2px solid white;
-  padding-top:  10px;
-  margin-top: auto;
-  margin-bottom: 20px;
-}
-
-.home-container{
-  width: 350px;
-  text-align: justify;
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  align-items: center;
-}

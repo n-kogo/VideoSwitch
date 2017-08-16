@@ -223,7 +223,6 @@ video.active{
   pointer-events: none;
   width: 14%;
   font-family: Arial;
-
 }
 
 #debug-container p {
@@ -318,130 +317,6 @@ video.active{
   animation-delay: 3s;
 }
 
-//@keyframes title-anim {
-//  0%, 30%{
-//    opacity: 0;
-//    margin-top: 12px;
-//  }
-//  39%, 85%{
-//    opacity: 1;
-//    margin-top: 35px;
-//  }
-//  100%{
-//    margin-top: -20px;
-//  }
-//}
-//
-//@keyframes overlay-anim {
-//  0%, 10%{
-//    opacity: 0;
-//  }
-//  20%, 75%{
-//    opacity: 1;
-//  }
-//  100%{
-//    opacity: 0;
-//  }
-//}
-//
-//@keyframes spectateur-bt-anim {
-//  0%, 37%{
-//    opacity: 1;
-//    box-shadow: 0 0 50px rgba(11, 115, 129, 0.8);
-//  }
-//  38%, 100%{
-//    opacity: .6;
-//    box-shadow: 0 0 50px rgba(10, 84, 90, 0.5);
-//  }
-//}
-//
-//
-//@keyframes emma-bt-anim {
-//  0%, 25%{
-//    opacity: 0;
-//    margin-top: -10px;
-//    box-shadow: 0 0 50px rgba(10, 84, 90, 0.5);
-//  }
-//  30%, 37%{
-//    opacity: .6;
-//    margin-top: 0px;
-//    box-shadow: 0 0 50px rgba(10, 84, 90, 0.5);
-//    transform: scale(1);
-//  }
-//  38%, 55%{
-//    opacity: 1;
-//    box-shadow: 0 0 50px rgba(11, 115, 129, 0.8);
-//
-//  }
-//  /*39%{*/
-//    /*transform: scale(.95);*/
-//  /*}*/
-//  48%{
-//    transform: scale(1);
-//  }
-//  56%, 100%{
-//    opacity: .6;
-//    box-shadow: 0 0 50px rgba(10, 84, 90, 0.5);
-//  }
-//}
-//
-//@keyframes emma-halo-anim {
-//  0%, 37%{
-//    opacity: 0;
-//  }
-//  38%{
-//    opacity: 1;
-//    transform: scale(1);
-//  }
-//  42%{
-//    transform: scale(1.5);
-//
-//  }
-//  55%{
-//    transform: scale(1.9);
-//  }
-//  56% {
-//    opacity: 0;
-//  }
-//}
-//
-//@keyframes solvej-bt-anim {
-//  0%, 45%{
-//    opacity: 0;
-//    margin-top: -10px;
-//    box-shadow: 0 0 50px rgba(10, 84, 90, 0.5);
-//  }
-//  50%, 55%{
-//    opacity: .6;
-//    margin-top: 0px;
-//    box-shadow: 0 0 50px rgba(10, 84, 90, 0.5);
-//  }
-//  56%, 100%{
-//    opacity: 1;
-//    box-shadow: 0 0 50px rgba(11, 115, 129, 0.8);
-//  }
-//}
-//
-//@keyframes solvej-halo-anim {
-//  0%, 55%{
-//    opacity: 0;
-//  }
-//  56%{
-//    opacity: 1;
-//    transform: scale(1);
-//  }
-//  60%{
-//    transform: scale(1.5);
-//
-//  }
-//  70%{
-//    transform: scale(1.9);
-//  }
-//  72% {
-//    opacity: 0;
-//  }
-//}
-
 .min-container{
   position: absolute;
   width: 100%;
@@ -484,4 +359,115 @@ video.active{
   20% { opacity:1; }
   25% { transform: scale(1); opacity:1; }
   50% { border-width:0; opacity:0; transform: scale(1.3); }
+}
+
+
+.home{
+  margin: 0;
+  padding: 0;
+  color: white;
+  /*background-image: url(assets/images/titre_fond.jpg);*/
+  width: 100%;
+  height: 100%;
+  font-family: 'OpenSans', sans-serif;
+  overflow: hidden;
+  position: relative;
+  &__content{
+    display: flex;
+    flex-direction:column;
+    align-items: center;
+  }
+  &__footer{
+    border-top: 2px solid white;
+    padding-top: 15px;
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+  }
+}
+
+.home-container{
+  width: 350px;
+  text-align: justify;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+
+.credits{
+  color: white;
+  padding-bottom: 40px;
+  background-color: rgba(0, 0 ,0 , .3);
+  width: 100%;
+  h2{
+    font-size: 18px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+  }
+  &__people{
+    display: flex;
+    flex-flow: column;
+  }
+  &__link{
+    display: inline-block;
+    margin: auto;
+    color: #e8da8e;
+  }
+  a, a:visited{
+    color: #e8da8e;
+    text-decoration: underline;
+    &:hover{
+      color: #d6c967;
+    }
+  }
+}
+
+.making-of{
+  width: 100%;
+  background-color: rgba(0, 0 , 0 , .35);
+  color: white;
+  height: auto;
+  h1, h2, h3{color: white; font-weight: 400;}
+  h3{
+    font-size: 1.3em;
+  }
+  h2{
+    font-size: 3em;
+  }
+  h2, h3{
+    margin: 0px;
+  }
+  &__video-container{
+    background-color: #111;
+    width: 100%;
+  }
+  &__video{
+
+  }
+  &__paragraph{
+    max-width: 640px;
+    margin: auto;
+    width: 100%;
+    text-align: justify;
+    font-size: 14px;
+  }
+  &__titles{
+    margin: auto;
+    width: 270px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+  }
+}
+
+.fitted-text{
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  line-height: 1em;
+  &__space{
+    width: .5em;
+  }
 }
