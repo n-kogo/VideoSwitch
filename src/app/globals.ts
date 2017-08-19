@@ -2,6 +2,8 @@ import {CST} from "./const";
 import {DebugElement} from "./class/debugElement";
 import {PointDeVue} from "./class/PointDeVue";
 import {Tutorial} from "./components/Tutorial";
+import {VideoBar} from "./components/VideoBar";
+import {BufferOverlay} from "./components/BufferOverlay";
 
 export let g:{
   debugElements: Array<DebugElement>;
@@ -30,11 +32,14 @@ export let g:{
   filmTimestamp: number;
   nextInterval: number;
   frameLoop: number;
+  volume: number;
   mouse: {
     x: number,
     y: number
   },
   tutorial: Tutorial | null,
+  bufferOverlay: BufferOverlay | null,
+  videoBar: VideoBar | null
 } = {
   debugElements:[],
   pointDeVue: {},
@@ -62,9 +67,12 @@ export let g:{
   filmTimestamp: 0,
   nextInterval: 0,
   frameLoop: 0,
+  volume: 1,
   mouse: {
     x: 0,
     y: 0,
   },
-  tutorial: null
+  tutorial: null,
+  bufferOverlay: null,
+  videoBar: null
 };

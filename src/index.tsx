@@ -78,13 +78,13 @@ ReactDOM.render(
   <div>
     <BrowserRouter>
       <Switch>
+        <Route path="/film" component={Film} />
         <Navigation>
           <Route exact path="/" component={Home} />
           <Route path="/app" component={App} />
           <Route path="/credits" component={Credits}/>
           <Route path="/making-of" component={MakingOf}/>
         </Navigation>
-        <Route exact path="/film" component={Film} />
       </Switch>
 
     </BrowserRouter>

@@ -17,9 +17,9 @@ export class Home extends React.Component {
               <p>Solvej et Emma sont amies d'enfance.</p>
               <p>Elles se retrouvent quelques années plus tard dans la cabane de leurs années de jeunesse. Seulement, elles ont désormais une vision différente de leur amitié.</p>
             </div>
-            <div className="home__footer">
-              Lyne HEHLEN | EMCA 2017
-            </div>
+            {/*<div className="home__footer">*/}
+              {/*Lyne HEHLEN | EMCA 2017*/}
+            {/*</div>*/}
           </div>
         </div>
       </div>

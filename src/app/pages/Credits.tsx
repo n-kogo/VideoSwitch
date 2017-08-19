@@ -104,25 +104,29 @@ export class Credits extends React.Component{
           name: "Renaud DENIS"
         }
       ]
+    },
+    {
+      title: "EMCA 2017",
+      links: []
     }
   ];
   render(){
-    let credits = this.data.map((cat)=>{
-      let people = cat.links.map((person)=>{
+    let credits = this.data.map((cat, idx)=>{
+      let people = cat.links.map((person, i2)=>{
         if(person.link){
           return (
-            <a href={person.link} target="_blank" className="credits__link">{person.name}</a>
+            <a key={i2} href={person.link} target="_blank" className="credits__link">{person.name}</a>
           )
         }
         else {
           return (
-            <div className="credits__link">{person.name}</div>
+            <div key={i2} className="credits__link">{person.name}</div>
           )
         }
 
       });
       return(
-        <div>
+        <div key={idx}>
           <h2>{cat.title}</h2>
           <div className="credits__people">{people}</div>
         </div>

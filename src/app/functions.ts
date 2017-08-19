@@ -4,12 +4,15 @@ import {DebugElement} from "./class/debugElement";
 import {PointDeVue} from "./class/PointDeVue";
 import {LoaderService} from "./class/MediaLoader";
 
-let timerBarBloc,
+let
+  videoBarBloc,
+  timerBarBloc,
   timerBarBufferBloc,
   timerBarContainerBloc,
   timerCanvas : HTMLCanvasElement;
 
 export function cacheDomElements(){
+  videoBarBloc = document.getElementsByClassName('video-bar')[0];
   timerBarBloc = document.getElementById('timer-bar');
   timerBarBufferBloc = document.getElementById('timer-bar-buffer')
   timerBarContainerBloc = document.getElementById('timer-bar-container');
@@ -57,6 +60,17 @@ export function isPointDeVueAvailable(pdv: PointDeVue, frame: number){
   return (pdv.depart <= frame && pdv.fin >= frame );
 }
 
+export function setVolume(value:number){
+  value = Math.max(0, Math.min(value, 1));
+  g.volume = value;
+  g.audio.voix.volume = g.volume;
+  for(let key in g.pointDeVue){
+    g.pointDeVue[key].updateVolume(g.volume);
+  }
+  g.videoBar.updateVolumeBar(value);
+}
+
+
 export function resize(){
   let width, height, mtop, mleft;
   let videos = document.getElementsByTagName('video');
@@ -101,17 +115,50 @@ export function setResolution(loadTime: number){
     r = 1280
   }
   else {
-    r = 1920
+    // r = 1920
+    r = 1280
   }
-
-  if(loadTime > 1500){
+  /*
+    Right now: ~20Mo of sound
+   */
+  if(loadTime > 10 * 1000){ // < 2Mo/s
     r = Math.min(r, 1280)
   }
-  if (loadTime > 4000){
+  if (loadTime > 80 * 1000){ // <300Ko/s
     r = Math.min(r, 853)
   }
+  debugger;
   g.resolution = r;
 }
+
+// Fuck typescript that's dirty AF
+export function toggleFullscreen(){
+  let fs: any = document.documentElement;
+  if (!document.fullscreenElement &&    // alternative standard method
+    !(<any>document).mozFullScreenElement && !document.webkitFullscreenElement && !(<any>document).msFullscreenElement) {  // current working methods
+    if (fs.requestFullscreen) {
+      fs.requestFullscreen();
+    } else if (fs.msRequestFullscreen) {
+      fs.msRequestFullscreen();
+    } else if (fs.mozRequestFullScreen) {
+      fs.mozRequestFullScreen();
+    } else if (fs.webkitRequestFullscreen) {
+      fs.webkitRequestFullscreen((<any>Element).ALLOW_KEYBOARD_INPUT);
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if ((<any>document).msExitFullscreen) {
+      (<any>document).msExitFullscreen();
+    } else if ((<any>document).mozCancelFullScreen) {
+      (<any>document).mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+  }
+  console.info('TRYNA GET FULLSCREEN')
+}
+
 
 // load new video
 export function selectVideo(newVideoName: string, forced?: boolean){
@@ -131,8 +178,13 @@ export function selectVideo(newVideoName: string, forced?: boolean){
     if(closeFrame && closeFrame > g.currentFrame){
       g.nextShotFrame = closeFrame;
     }
-    g.state.isLoading = true;
+    setLoading(true);
   }
+}
+
+export function setLoading(value: boolean){
+  g.state.isLoading = value;
+  g.bufferOverlay.updateDisplay(g.state.isLoading);
 }
 
 //once loaded make the video start
@@ -156,7 +208,7 @@ export function playNextPOV(){
   g.nextVideo = null;
   g.nextShotFrame = null;
   g.state.isWaiting = false;
-  if(g.state.isPlaying ){
+  if(g.state.isPlaying){
     if (g.audio.voix.paused) g.audio.voix.play();
     for(let key in g.pointDeVue){
       if(isPointDeVueAvailable(g.pointDeVue[key], g.currentFrame)){
@@ -165,7 +217,7 @@ export function playNextPOV(){
       }
     }
   }
-  g.state.isLoading = false;
+  setLoading(false)
 }
 
 export function pauseForBuffer(pdv: PointDeVue){
@@ -211,7 +263,7 @@ export function moveVideoTimer(frame){
   g.filmTimestamp = frameToSecond(frame) * 1000;
   g.currentFrame = frame;
   g.previousFrame = frame - 1;
-  g.state.isLoading = true;
+  setLoading(true)
   if(g.tutorial){
     g.tutorial.moveTo(g.currentFrame);
     g.tutorial.pause();
@@ -242,6 +294,7 @@ export function drawDebugTimeline(){
 export function toggleVideo(){
   console.log('TOGGLE VIDEO', g.tutorial)
   g.state.isPlaying = !g.state.isPlaying;
+  g.videoBar.updatePlayStatus(g.state.isPlaying);
   if(g.state.isPlaying){
     if (g.audio.voix.paused) g.audio.voix.play();
     if(g.tutorial) g.tutorial.play();
@@ -268,27 +321,11 @@ export function spawnPointDeVue(data){
   g.pointDeVue[data.name] = new PointDeVue(data.name, data.depart, data.fin, data.color);
 }
 
-export function launchTimerEvents(){
-  timerBarContainerBloc.addEventListener('click', function(e){
-    let x = e.clientX - e.currentTarget.clientLeft;
-    let percent = x / e.currentTarget.clientWidth;
-    let newFrame = CST.FILM_DATA.FIN * percent;
-    if(!isPointDeVueAvailable(g.pointDeVue[g.currentVideo], newFrame)){
-      selectVideo('spectateur', true);
-    }
-    else {
-      selectVideo(g.currentVideo, true);
-    }
-    moveVideoTimer(newFrame);
-  });
-}
-
 export function updateTimerBar(){
-  let timerContainer = document.getElementById('timer-bar-container');
-  if(window.innerHeight - g.mouse.y < CST.TIMER_SHOW_DISTANCE && !timerContainer.classList.contains('show'))
-    timerContainer.classList.add('show');
-  else if ((window.innerHeight - g.mouse.y >= CST.TIMER_SHOW_DISTANCE && timerContainer.classList.contains('show')))
-    timerContainer.classList.remove('show');
+  if(window.innerHeight - g.mouse.y < CST.TIMER_SHOW_DISTANCE && !videoBarBloc.classList.contains('show'))
+    videoBarBloc.classList.add('show');
+  else if ((window.innerHeight - g.mouse.y >= CST.TIMER_SHOW_DISTANCE && videoBarBloc.classList.contains('show')))
+    videoBarBloc.classList.remove('show');
   timerBarBloc.style.width = (g.currentFrame * 100 / CST.FILM_DATA.FIN) + '%';
   // timerBarBloc.style.borderRightWidth = window.innerWidth - timerBarBloc.offsetWidth + 'px';
 }
@@ -350,7 +387,8 @@ export function bufferUpdate(){
   let buffers: {[s: string]: Array<Array<number>>} = {};
   let mergedBuffer;
   let ctx: CanvasRenderingContext2D = timerCanvas.getContext('2d');
-  timerCanvas.width = window.innerWidth;
+  // console.log(timerBarContainerBloc.innerWidth, timerBarContainerBloc)
+  timerCanvas.width = timerBarContainerBloc.clientWidth;
   ctx.fillStyle = "#333";
   ctx.fillRect(0, 0, timerCanvas.width, timerCanvas.height);
   // mergedBuffer = [];

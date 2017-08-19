@@ -13,7 +13,7 @@ interface Resource {
 export class MediaLoader {
   private _loadCallbacks: Array<Function> = [];
   private _updateCallbacks: Array<Function> = [];
-  private _resources: Array<Resource> = [];
+  _resources: Array<Resource> = [];
   public globalLoad: number = 0;
   private _loadStart: number;
   constructor(){

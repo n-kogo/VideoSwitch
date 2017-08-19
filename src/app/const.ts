@@ -1,7 +1,8 @@
 export const CST = {
-  DEBUG: false,
+  DEBUG: true,
   // DEBUG: process.env.DEBUG,
   FULL_END: 6585,
+  MIN_BUFFER_FRAMES: 20,
   TIMER_SHOW_DISTANCE: 34,
   OVERLAY_DATA: {
     LIST: [{

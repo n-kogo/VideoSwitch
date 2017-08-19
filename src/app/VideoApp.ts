@@ -3,9 +3,9 @@ import {CST} from "./const";
 import {
   bufferUpdate,
   drawDebugTimeline, findClosestShotFrame, frameToSecond,
-  getAbsoluteFrame, isPointDeVueAvailable, launchTimerEvents, moveVideoTimer, pauseForBuffer, playNextPOV, resize,
+  getAbsoluteFrame, isPointDeVueAvailable, moveVideoTimer, pauseForBuffer, playNextPOV, resize,
   secondToFrame, selectVideo,
-  setResolution,
+  setResolution, setVolume,
   spawnPointDeVue,
   toggleVideo, updateTimerBar
 } from "./functions";
@@ -47,8 +47,8 @@ export class VideoApp{
     console.log('LOADER FULL LOAD EVENT');
     g.audio.voix.volume = 1;
     g.state.isAudioLoaded = true;
+    setVolume(1);
     this.inputHandle();
-    launchTimerEvents();
     resize();
     g.currentTimestamp = performance.now();
     selectVideo('spectateur');
@@ -121,6 +121,8 @@ export class VideoApp{
       if(g.state.isPlaying && !g.state.isWaiting){
         g.filmTimestamp += g.deltaTimestamp;
         g.currentFrame = secondToFrame(g.filmTimestamp / 1000);
+      }else{
+        console.log('g.state.isPlaying', g.state.isPlaying, '!g.state.isWaiting', !g.state.isWaiting, g.state.isLoading)
       }
 
       //playback rate
@@ -173,7 +175,6 @@ export class VideoApp{
         for(key in g.pointDeVue){
           if(ready && !g.pointDeVue[key].isReady()) ready = false;
         }
-
         let validState = false; // fulfills any of the conditions below
         if(!g.nextShotFrame && !findClosestShotFrame(g.currentFrame)){
           validState = true
@@ -190,6 +191,9 @@ export class VideoApp{
           validState = true;
         }
         if(ready && validState) playNextPOV();
+        else {
+          console.log('ready', ready, 'validstate', validState)
+        }
       }
       else{
         bufferUpdate();
@@ -224,6 +228,15 @@ export class VideoApp{
     }
     window.requestAnimationFrame(this.frameUpdate);
     //video end
+  }
+
+  kill(){
+    g.audio.voix.pause();
+    g.audio.voix.src = "";
+    g.audio.voix.load();
+    for(let key in g.pointDeVue){
+      g.pointDeVue[key].kill();
+    }
   }
 
 }

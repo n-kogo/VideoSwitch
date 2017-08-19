@@ -1,11 +1,13 @@
 import * as React from "react";
 import '../../styles/style.scss';
 import {VideoApp} from "../VideoApp";
-import {cacheDomElements} from "../functions";
+import {cacheDomElements, toggleFullscreen, toggleVideo} from "../functions";
 import {AppLoader} from "../components/Loader";
 import {g} from "../globals";
 import {IntroText} from "../components/IntroText";
 import {Tutorial} from "../components/Tutorial";
+import {VideoBar} from "../components/VideoBar";
+import {BufferOverlay} from "../components/BufferOverlay";
 
 export class Film extends React.Component<any, any>{
   app: VideoApp;
@@ -36,12 +38,12 @@ export class Film extends React.Component<any, any>{
       <div>
         <div id="loading-container">
           <AppLoader onLoad={this.onLoad} onVideoLoadUpdate={this.onVideoUpdate} />
-          {/*<div className="pulse-loader"></div>*/}
         </div>
         <IntroText ref="intro" onComplete={this.onIntroComplete} />
         <div className="app-container">
           <div id="pause-overlay">
           </div>
+          <BufferOverlay ref="bufferOverlay" />
           <Tutorial ref="tutorial"/>
           <div className="container-video" id="container-video">
             <video width="400" height="222" id="spectateur">
@@ -60,12 +62,7 @@ export class Film extends React.Component<any, any>{
             </div>
             <div className="button hide solvej" id="solvej-bt">
             </div>
-            <div id="timer-bar-container" className="">
-              <div id="timer-bar">
-                <div className="timer-bar-handle"></div>
-              </div>
-              <canvas id="timer-background" width="600" height="5"></canvas>
-            </div>
+            <VideoBar ref="videoBar" handle={this.handleAction} isPlaying={g.state.isPlaying}/>
           </div>
         </div>
       </div>
@@ -74,6 +71,11 @@ export class Film extends React.Component<any, any>{
   componentDidMount(){
     cacheDomElements();
     this.app = new VideoApp();
+    g.videoBar = this.refs.videoBar as VideoBar;
+    g.bufferOverlay = this.refs.bufferOverlay as BufferOverlay;
+  }
+  componentWillUnmount(){
+    this.app.kill();
   }
   //pass callbacks to app through reacgt components
   onLoad(loadTime){
@@ -85,5 +87,14 @@ export class Film extends React.Component<any, any>{
   }
   onVideoUpdate(fn: Function){
     this.videoUpdateCb.push(fn);
+  }
+  handleAction(key: string){
+    switch(key){
+      case 'play':
+        toggleVideo();
+        break;
+      case 'fullscreen':
+        toggleFullscreen();
+    }
   }
 }

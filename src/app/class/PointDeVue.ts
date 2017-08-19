@@ -1,4 +1,4 @@
-import {secondToFrame, selectVideo} from "../functions";
+import {findClosestRange, isPointDeVueAvailable, secondToFrame, selectVideo} from "../functions";
 import {CST} from "../const";
 import {LoaderService} from "./MediaLoader";
 import {g} from "../globals";
@@ -10,6 +10,7 @@ export class PointDeVue{
   delta: number =  1 / (.75 * CST.FPS);
   currentInterval: any;
   src: string;
+  muted: boolean = true;
   buffer: Array<[number, number]> = [];
   constructor(public tag, public depart: number, public fin: number, public color: string){
     this.video = <HTMLVideoElement> document.getElementById(tag);
@@ -24,6 +25,7 @@ export class PointDeVue{
     this.button.addEventListener('click', ()=>{selectVideo(this.tag)});
   }
   mute(){
+    this.muted = true;
     clearInterval(this.currentInterval);
     this.currentInterval = setInterval(()=>{
       this.audio.volume = Math.round(Math.max(0,this.audio.volume - this.delta * 1.25) * 100) / 100;
@@ -34,11 +36,12 @@ export class PointDeVue{
     }, CST.FPS);
   }
   unmute(){
+    this.muted = false;
     clearInterval(this.currentInterval);
     this.currentInterval = setInterval(()=>{
-      this.audio.volume = Math.round(Math.min(1, this.audio.volume + this.delta) * 100) / 100;
-      if(this.audio.volume >= 1){
-        this.audio.volume = 1;
+      this.audio.volume = Math.round(Math.min(g.volume, this.audio.volume + this.delta) * 100) / 100;
+      if(this.audio.volume >= g.volume){
+        this.audio.volume = g.volume;
         clearInterval(this.currentInterval);
       }
     }, CST.FPS);
@@ -47,8 +50,20 @@ export class PointDeVue{
   isReady(){
     // TODO: determine in audio.readystate is useful
     this.getVideoBuffer();
+    let range = findClosestRange(this, g.currentFrame);
+    let bool =  this.audio.readyState == 4 && this.video.readyState == 4 && (!isPointDeVueAvailable(this, g.currentFrame) || (range  && range[1] > g.currentFrame - this.depart + CST.MIN_BUFFER_FRAMES));
+    if(range){
+      console.log('advance frame is', (range[1] - (g.currentFrame - this.depart)), 'for', this.tag )
+    }
+    // if (!bool) debugger;
+    return bool;
+  }
 
-    return this.audio.readyState == 4 && this.video.readyState == 4;
+  updateVolume(value: number){
+    if(!this.muted){
+      this.audio.volume = value;
+      console.log(this.audio, LoaderService._resources);
+    }
   }
 
   getVideoBuffer(): Array<[number, number]>{
@@ -82,5 +97,12 @@ export class PointDeVue{
     }
     return arr;
   }
-
+  kill(){
+    this.audio.pause();
+    this.audio.src = "";
+    this.audio.load();
+    this.video.pause();
+    this.video.src = "";
+    this.video.load();
+  }
 }
