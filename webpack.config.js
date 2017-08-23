@@ -44,10 +44,7 @@ module.exports = {
   },
   module: {
     loaders: [
-      {
-        test: /\.tsx?$/,
-        loader: 'ts-loader'
-      },
+      { test: /\.ts(x?)$/, loader: 'babel-loader!ts-loader' },
       {
         test: /\.scss$/,
         loader: ExtractTextPlugin.extract({
@@ -99,7 +96,9 @@ module.exports = {
       disable: !isProduction
     }),
     new webpack.DefinePlugin({
-      STATS_URL: (isProduction ? "''" : "'http://localhost:1337'"),
+      STATS_URL: (isProduction ? "'http://stats.le-refuge-des-souvenirs.fr'" : "'http://localhost:1337'"),
+    }),
+    new webpack.optimize.UglifyJsPlugin({
     })
   ],
   devServer: {
