@@ -1,7 +1,8 @@
 import * as React from "react";
-import {isPointDeVueAvailable, moveVideoTimer, selectVideo, setVolume} from "../functions";
+import {setVolume} from "../functions";
 import {g} from "../globals";
 import {CST} from "../const";
+import {supportedLangs} from "./Subtitles";
 
 export class VideoBar extends React.Component<any, any> {
   handleAction: Function
@@ -10,14 +11,18 @@ export class VideoBar extends React.Component<any, any> {
     this.handleAction = props.handle;
     this.state = {
       isPlaying: g.state.isPlaying,
-      volume: g.volume
+      volume: g.volume,
+      color: 'spectateur',
+      showSubPanel: false,
+      showBar: null,
+      lang: null
     }
   }
   render(){
     let percent = this.state.volume * 100 + '%';
     console.log('volument percent', percent);
     return (
-      <div className="video-bar">
+      <div className={"video-bar " + this.state.color + " "  + (!!this.state.showBar ? 'show' : '')}>
         <div className={"video-bar__play " + (this.state.isPlaying ? 'playing' : 'paused')} onClick={()=> this.handleAction('play')}></div>
         <div id="timer-bar-container" onClick={(e)=> this.handleTimerClick(e)}>
           <div id="timer-bar">
@@ -34,7 +39,15 @@ export class VideoBar extends React.Component<any, any> {
             </div>
           </div>
         </div>
-        <div className="video-bar__subtitles">S T</div>
+        <div className={"video-bar__subtitles " + (this.state.lang !== null ? 'active': '')} onMouseMove={()=>this.showBar()} onClick={()=>this.toggleSubPanel()}>
+          <span>ST</span>
+          <div className={"subtitle-panel " + (this.state.showSubPanel ? 'show' : 'hide')}>
+            <div className={"subtitle-panel__unit " + (this.state.lang === null ? 'active' : '')} onClick={()=>this.setLang(null)}>Aucun</div>
+            <div className={"subtitle-panel__unit " + (this.state.lang === 'FR' ? 'active' : '')} onClick={()=>this.setLang('FR')}>Français</div>
+            <div className={"subtitle-panel__unit " + (this.state.lang === 'EN' ? 'active' : '')} onClick={()=>this.setLang('EN')}>English</div>
+            <div className={"subtitle-panel__unit " + (this.state.lang === 'ES' ? 'active' : '')} onClick={()=>this.setLang('ES')}>Español</div>
+          </div>
+        </div>
         <div className="video-bar__fullscreen" onClick={()=> this.handleAction('fullscreen')}>
           <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%">
             <g className="fs-button-corner-0">
@@ -54,6 +67,7 @@ export class VideoBar extends React.Component<any, any> {
       </div>
     )
   }
+  //volume
   handleVolumeClick(e){
     let eBounds = e.currentTarget.getBoundingClientRect();
     let x = e.clientX - eBounds.left;
@@ -66,22 +80,63 @@ export class VideoBar extends React.Component<any, any> {
     });
   }
 
+  //subtitles
+  toggleSubPanel(){
+    this.setState({
+      showSubPanel: !this.state.showSubPanel
+    })
+  }
+  setLang(lang: supportedLangs){
+    this.setState({
+      lang: lang
+    })
+    this.handleAction('subtitles', lang);
+  }
+
   updatePlayStatus(state: boolean){
     this.setState({
       isPlaying: state
     });
   }
+
+  updateColor(currentVideo: string){
+    this.setState({
+      color: currentVideo
+    })
+  }
+
+  updateBar(){
+    if(!g.checkMobile() && window.innerHeight - g.mouse.y < CST.TIMER_SHOW_DISTANCE && !this.state.showBar)
+      this.showBar();
+    document.getElementById('timer-bar').style.width = (g.currentFrame * 100 / CST.FILM_DATA.FIN) + '%';
+    // timerBarBloc.style.borderRightWidth = window.innerWidth - timerBarBloc.offsetWidth + 'px';
+    if(this.state.showBar && g.currentFrame - this.state.showBar > 60){
+      this.hideBar()
+    }
+  }
+
+  showBar(){
+    this.setState({
+      showBar: g.currentFrame
+    })
+  }
+
+  hideBar(){
+    if(this.state.showBar){
+      this.setState({
+        showBar: null
+      })
+    }
+  }
+
   handleTimerClick(e){
+    // if(g.checkMobile()){
+    //   this.showBar();
+    // }
     let eBounds = e.currentTarget.getBoundingClientRect();
     let x = e.clientX - eBounds.left;
     let percent = x / e.currentTarget.clientWidth;
     let newFrame = CST.FILM_DATA.FIN * percent;
-    if(!isPointDeVueAvailable(g.pointDeVue[g.currentVideo], newFrame)){
-      selectVideo('spectateur', true);
-    }
-    else {
-      selectVideo(g.currentVideo, true);
-    }
-    moveVideoTimer(newFrame);
+    this.handleAction('moveTimer', newFrame);
   }
 }

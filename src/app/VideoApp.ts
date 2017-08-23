@@ -2,17 +2,18 @@
 import {CST} from "./const";
 import {
   bufferUpdate,
-  drawDebugTimeline, findClosestShotFrame, frameToSecond,
-  getAbsoluteFrame, isPointDeVueAvailable, moveVideoTimer, pauseForBuffer, playNextPOV, resize,
-  secondToFrame, selectVideo,
+  drawDebugTimeline, findClosestRange, findClosestShotFrame, frameToSecond,
+  getAbsoluteFrame, isPointDeVueAvailable, playNextPOV, resize,
+  secondToFrame, selectVideo, setLoading,
   setResolution, setVolume,
   spawnPointDeVue,
-  toggleVideo, updateTimerBar
+  toggleVideo
 } from "./functions";
 import {DebugElement} from "./class/debugElement";
 import {LoaderService} from "./class/MediaLoader";
 import '../styles/style.scss';
 import {Tutorial} from "./components/Tutorial";
+import {PointDeVue} from "./class/PointDeVue";
 
 
 /*
@@ -25,7 +26,13 @@ jouer et par dessus. Animer le bouton
 
 export class VideoApp{
   tutorial: Tutorial;
-  constructor(){
+  onCompleteCallback: Function;
+  viewingRanges: Array<{
+    pov: string,
+    range: [number, number]
+  }> = [];
+  constructor(onCompleteCallback: Function){
+    this.onCompleteCallback = onCompleteCallback;
     CST.POINTS_DE_VUE.forEach(pointDeVue=>{
       spawnPointDeVue(pointDeVue)
     });
@@ -35,6 +42,8 @@ export class VideoApp{
     LoaderService.load(g.audio.voix);
     // LoaderService.update();
     LoaderService.onLoad((loadTime)=>{
+      console.log('____ LOADER SERVICE AUDIO FINISHED ____');
+      console.log('');
       setResolution(loadTime);
       for(let key in g.pointDeVue){
         g.pointDeVue[key].load();
@@ -50,18 +59,22 @@ export class VideoApp{
     setVolume(1);
     this.inputHandle();
     resize();
+    window.onresize = resize;
     g.currentTimestamp = performance.now();
     selectVideo('spectateur');
-    toggleVideo();
-    moveVideoTimer(0);
+    if(!g.checkMobile()){
+      toggleVideo();
+    }
+    this.moveVideoTimer(0);
     if(CST.DEBUG){
       g.debugElements = g.debugElements.concat([
         new DebugElement('frame-count', ()=>{return g.currentFrame.toFixed(0)}),
         new DebugElement('abs-pov-frame', ()=>{return  (g.pointDeVue[g.currentVideo].depart + secondToFrame(g.pointDeVue[g.currentVideo].video.currentTime))}),
-        new DebugElement('audio-frame', ()=>{return  secondToFrame(g.audio.voix.currentTime) }),
+        new DebugElement('voix-frame', ()=>{return  secondToFrame(g.audio.voix.currentTime) }),
         new DebugElement('cab-abs-frame', ()=>{return  (g.pointDeVue.spectateur.depart + secondToFrame(g.pointDeVue.spectateur.video.currentTime))}),
         new DebugElement('cab-audio-frame', ()=>{return  (g.pointDeVue.spectateur.depart + secondToFrame(g.pointDeVue.spectateur.audio.currentTime))}),
         new DebugElement('emma-abs-frame', ()=>{return  (g.pointDeVue.emma.depart + secondToFrame(g.pointDeVue.emma.video.currentTime))}),
+        new DebugElement('emma-audio-frame', ()=>{return  (g.pointDeVue.emma.depart + secondToFrame(g.pointDeVue.emma.audio.currentTime))}),
         new DebugElement('solvej-pov-frame', ()=>{return  (g.pointDeVue.solvej.depart + secondToFrame(g.pointDeVue.solvej.video.currentTime))}),
         new DebugElement('cabane-speed', ()=>{return  g.pointDeVue.spectateur.video.playbackRate}),
         new DebugElement('audio-volume', ()=>{return  g.audio.voix.volume}),
@@ -112,6 +125,7 @@ export class VideoApp{
   frameUpdate(){
     if(!g.state.isAudioLoaded || !g.state.isIntroComplete){
       //TODO: remove this state
+      window.requestAnimationFrame(this.frameUpdate);
     }
     else {
       // console.log("audio loaded")
@@ -119,10 +133,32 @@ export class VideoApp{
       g.deltaTimestamp = performance.now() - g.currentTimestamp;
       g.currentTimestamp = performance.now();
       if(g.state.isPlaying && !g.state.isWaiting){
+        //viewing range for stat
+        if(this.viewingRanges.length == 0){
+          this.viewingRanges.push({
+            pov: g.currentVideo,
+            range: [g.currentFrame, g.currentFrame]
+          });
+        }
+        else if(this.viewingRanges[this.viewingRanges.length - 1].pov === g.currentVideo){
+          this.viewingRanges[this.viewingRanges.length - 1].range[1] = g.currentFrame;
+        }
+        else {
+          this.viewingRanges.push({
+            pov: g.currentVideo,
+            range: [g.currentFrame, g.currentFrame]
+          });
+          console.log(this.viewingRanges)
+        }
+
+        //subtitles
+        g.subtitles.updateTimer(g.currentFrame);
+
+        //general frame update
         g.filmTimestamp += g.deltaTimestamp;
         g.currentFrame = secondToFrame(g.filmTimestamp / 1000);
       }else{
-        console.log('g.state.isPlaying', g.state.isPlaying, '!g.state.isWaiting', !g.state.isWaiting, g.state.isLoading)
+        // console.log('g.state.isPlaying', g.state.isPlaying, '!g.state.isWaiting', !g.state.isWaiting, g.state.isLoading)
       }
 
       //playback rate
@@ -134,8 +170,10 @@ export class VideoApp{
           }
 
           let currentFramePdv = getAbsoluteFrame(currPdv);
-          if(g.currentFrame - currentFramePdv > 2){
-            pauseForBuffer(currPdv);
+          let closestRange = findClosestRange(currPdv, g.currentFrame);
+          if(!g.state.isLoading && (!closestRange || (g.currentFrame - currPdv.depart >= closestRange[1]))){
+            console.log('called for pause by', currPdv.tag, closestRange, currPdv.getVideoBuffer(), g.currentFrame)
+            this.pauseForBuffer(currPdv);
           }
           // console.log('timediff on ', key, g.currentFrame - currentFramePdv, g.currentFrame, currentFramePdv)
           if((g.frameLoop % 5) == 0 || g.state.isLoading){
@@ -221,15 +259,64 @@ export class VideoApp{
         g.pointDeVue[g.currentVideo].button.classList.add('hide');
         g.pointDeVue[g.currentVideo].button.classList.remove('active');
       }
-      updateTimerBar();
+
+      g.videoBar.updateBar();
       if(!isPointDeVueAvailable(g.pointDeVue.spectateur, g.currentFrame) && document.getElementById('loading-container').classList.contains('hide')){
         document.getElementById('loading-container').classList.remove('hide');
+        this.onCompleteCallback(this.viewingRanges);
+      }
+      else {
+        window.requestAnimationFrame(this.frameUpdate);
       }
     }
-    window.requestAnimationFrame(this.frameUpdate);
     //video end
   }
 
+  pauseForBuffer(pdv: PointDeVue){
+    console.log('called a pause for buffer ()!')
+    g.state.bufferedPOV = pdv;
+    // g.state.isBuffering = true;
+    if(g.state.isPlaying && !g.state.isLoading){
+      g.audio.voix.pause();
+      // g.audio.voix.currentTime = g.currentFrame;
+      for(let key in g.pointDeVue){
+        g.pointDeVue[key].video.pause();
+        // g.pointDeVue[key].video.currentTime = g.currentFrame;
+        g.pointDeVue[key].audio.pause();
+        // g.pointDeVue[key].audio.currentTime = g.currentFrame;
+      }
+    }
+    this.moveVideoTimer(secondToFrame(pdv.video.currentTime));
+  }
+
+  moveVideoTimer(frame: number){
+    g.state.isWaiting = true;
+    if (!g.audio.voix.paused) g.audio.voix.pause();
+    g.audio.voix.currentTime = Math.min(CST.FILM_DATA.FIN, Math.max(0, frameToSecond(frame)));
+    let currPdv;
+    for (let key in g.pointDeVue){
+      currPdv = g.pointDeVue[key];
+      currPdv.video.pause();
+      currPdv.audio.pause();
+      currPdv.video.currentTime = "" + Math.min(currPdv.fin, Math.max(0, frameToSecond(frame -  currPdv.depart))) + "";
+      currPdv.audio.currentTime = Math.min(currPdv.fin, Math.max(0, frameToSecond(frame - currPdv.depart)));
+    }
+    g.filmTimestamp = frameToSecond(frame) * 1000;
+    g.currentFrame = frame;
+    g.previousFrame = frame - 1;
+    this.viewingRanges.push({
+      pov: g.currentVideo,
+      range: [g.currentFrame, g.currentFrame]
+    });
+    setLoading(true);
+    if(g.tutorial){
+      g.tutorial.moveTo(g.currentFrame);
+      g.tutorial.pause();
+    }
+    if(g.checkMobile() && g.state.isPlaying){
+      toggleVideo()
+    }
+  }
   kill(){
     g.audio.voix.pause();
     g.audio.voix.src = "";

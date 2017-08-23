@@ -5,6 +5,8 @@ import {g} from "../globals";
 
 export class PointDeVue{
   video: HTMLVideoElement;
+  videoSource: MediaSource;
+  sourceBuffer: SourceBuffer;
   audio: HTMLAudioElement;
   button: HTMLElement;
   delta: number =  1 / (.75 * CST.FPS);
@@ -15,15 +17,19 @@ export class PointDeVue{
   constructor(public tag, public depart: number, public fin: number, public color: string){
     this.video = <HTMLVideoElement> document.getElementById(tag);
     this.video.volume = 0;
-    this.video.src = "";
-    this.video.load();
     this.audio = document.createElement('audio');
     this.audio.src = 'assets/audio/bande_son_'  + tag + '.mp3';
     this.audio.volume = 0;
     LoaderService.load(this.audio);
     this.button = document.getElementById(tag + "-bt");
     this.button.addEventListener('click', ()=>{selectVideo(this.tag)});
+
+    //bindings
   }
+
+  /*
+    SOUND FUNCTIONS
+   */
   mute(){
     this.muted = true;
     clearInterval(this.currentInterval);
@@ -47,13 +53,14 @@ export class PointDeVue{
     }, CST.FPS);
   }
 
+
   isReady(){
     // TODO: determine in audio.readystate is useful
     this.getVideoBuffer();
     let range = findClosestRange(this, g.currentFrame);
     let bool =  this.audio.readyState == 4 && this.video.readyState == 4 && (!isPointDeVueAvailable(this, g.currentFrame) || (range  && range[1] > g.currentFrame - this.depart + CST.MIN_BUFFER_FRAMES));
     if(range){
-      console.log('advance frame is', (range[1] - (g.currentFrame - this.depart)), 'for', this.tag )
+      // console.log('advance frame is', (range[1] - (g.currentFrame - this.depart)), 'for', this.tag )
     }
     // if (!bool) debugger;
     return bool;
@@ -66,6 +73,9 @@ export class PointDeVue{
     }
   }
 
+  /*
+    BUFFERS FUNCTIONS
+   */
   getVideoBuffer(): Array<[number, number]>{
     this.buffer = [];
     let l = this.video.buffered.length;
@@ -76,14 +86,6 @@ export class PointDeVue{
       ])
     }
     return this.buffer;
-  }
-
-  load(){
-    this.src = `./assets/videos/${g.resolution}p/${this.tag}.mp4`;
-    console.log('loaded', this.src);
-    this.video.src = this.src;
-    console.log(this.src);
-    this.video.load();
   }
 
   getAudioBuffer(): Array<[number, number]>{
@@ -97,12 +99,67 @@ export class PointDeVue{
     }
     return arr;
   }
+
+
+  /*
+    LOAD FUNCTIONS
+   */
+
+  load(){
+    this.src = `./assets/videos/${g.resolution}/${this.tag}.mp4`;
+    // this.src = `./assets/videos/1920/boucle_intro.mp4`;
+    // if ('MediaSource' in window && MediaSource.isTypeSupported(CST.CODEC)) {
+    //   this.videoSource = new MediaSource();
+    //   this.video.src = URL.createObjectURL(this.videoSource);
+    //   console.log('video src set');
+    //   console.log('     ____PointDeVue LOAD START ', this.tag, '_______');
+    //   this.videoSource.addEventListener('sourceopen', (e: MediaStreamEvent)=>{
+    //     console.log('SOURCE IS OPENING FROM LISTENER', this.videoSource.readyState)
+    //     this.sourceOpen(e)
+    //   });
+    // } else {
+    //   console.error('Unsupported MIME type or codec: ', CST.CODEC);
+    //   this.video.src = this.src;
+    // }
+    this.video.src = this.src;
+    this.video.load();
+  }
+
+  /*
+    OBSOLETE MEDIA SOURCE TESTS
+   */
+  sourceOpen(e: MediaStreamEvent){
+    this.sourceBuffer = this.videoSource.addSourceBuffer(CST.CODEC);
+    this.fetchStream(this.src, (buffer: ArrayBuffer)=>{
+      this.sourceBuffer.addEventListener('updateend', (_)=>{
+        console.log(this.videoSource.readyState, 'at update end', this.getVideoBuffer(), this.video.readyState);
+        // this.videoSource.endOfStream()
+        // debugger;
+      });
+      this.sourceBuffer.appendBuffer(buffer);
+      console.log(this.getVideoBuffer(), this.video.readyState, buffer.byteLength)
+    });
+    // this.video.load()
+
+  }
+
+  fetchStream(url: string, cb){
+    let xhr = new XMLHttpRequest();
+    xhr.open('get', url);
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function(res){
+      cb(xhr.response);
+    };
+    xhr.send();
+  }
+
   kill(){
     this.audio.pause();
     this.audio.src = "";
     this.audio.load();
     this.video.pause();
     this.video.src = "";
+    console.log('video kill lol')
     this.video.load();
   }
 }

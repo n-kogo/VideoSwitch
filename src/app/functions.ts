@@ -108,15 +108,22 @@ export function setResolution(loadTime: number){
   console.info('SET RESOLUTION', loadTime)
   let w = window.innerWidth;
   let r = 0;
-  if(w <= 900){
+  let storedTime = window.localStorage.getItem('audio-load-time');
+  loadTime = storedTime ? parseInt(storedTime) : loadTime;
+  if(!storedTime){
+    window.localStorage.setItem('audio-load-time', loadTime.toFixed());
+  }
+  if(w <=700){
+    r = 640;
+  }
+  else if(w <= 900){
     r = 853;
   }
   else if (w <= 1700){
     r = 1280
   }
   else {
-    // r = 1920
-    r = 1280
+    r = 1920
   }
   /*
     Right now: ~20Mo of sound
@@ -124,10 +131,12 @@ export function setResolution(loadTime: number){
   if(loadTime > 10 * 1000){ // < 2Mo/s
     r = Math.min(r, 1280)
   }
-  if (loadTime > 80 * 1000){ // <300Ko/s
+  if (loadTime > 60 * 1000){ // <300Ko/s
     r = Math.min(r, 853)
   }
-  debugger;
+  if(loadTime > 90 * 1000){
+    r = Math.min(r, 640)
+  }
   g.resolution = r;
 }
 
@@ -173,7 +182,7 @@ export function selectVideo(newVideoName: string, forced?: boolean){
     )
   ){
     g.nextVideo = newVideoName;
-    g.pointDeVue[g.nextVideo].button.classList.add('loading');
+    g.pointDeVue[g.nextVideo].button.classList.add('button__loading');
     let closeFrame = findClosestShotFrame(g.currentFrame);
     if(closeFrame && closeFrame > g.currentFrame){
       g.nextShotFrame = closeFrame;
@@ -201,9 +210,10 @@ export function playNextPOV(){
   document.getElementById('loading-container').classList.add('hide');
   g.pointDeVue[g.nextVideo].video.classList.add('active');
   g.pointDeVue[g.nextVideo].button.classList.add('active');
-  g.pointDeVue[g.nextVideo].button.classList.remove('loading');
+  g.pointDeVue[g.nextVideo].button.classList.remove('button__loading');
   g.pointDeVue[g.nextVideo].unmute();
-  timerBarBloc.style.backgroundColor = g.pointDeVue[g.nextVideo].color;
+  g.videoBar.updateColor(g.nextVideo);
+  // timerBarBloc.style.backgroundColor = g.pointDeVue[g.nextVideo].color;
   g.currentVideo = g.nextVideo;
   g.nextVideo = null;
   g.nextShotFrame = null;
@@ -220,22 +230,6 @@ export function playNextPOV(){
   setLoading(false)
 }
 
-export function pauseForBuffer(pdv: PointDeVue){
-  console.log('called a pause for buffer ()!')
-  g.state.bufferedPOV = pdv;
-  // g.state.isBuffering = true;
-  if(g.state.isPlaying && !g.state.isLoading){
-    g.audio.voix.pause();
-    // g.audio.voix.currentTime = g.currentFrame;
-    for(let key in g.pointDeVue){
-      g.pointDeVue[key].video.pause();
-      // g.pointDeVue[key].video.currentTime = g.currentFrame;
-      g.pointDeVue[key].audio.pause();
-      // g.pointDeVue[key].audio.currentTime = g.currentFrame;
-    }
-  }
-  moveVideoTimer(g.currentFrame);
-}
 
 export function playAfterBuffer(){
   if(g.state.isPlaying){
@@ -248,29 +242,7 @@ export function playAfterBuffer(){
 
 }
 
-export function moveVideoTimer(frame){
-  g.state.isWaiting = true;
-  if (!g.audio.voix.paused) g.audio.voix.pause();
-  g.audio.voix.currentTime = Math.min(CST.FILM_DATA.FIN, Math.max(0, frameToSecond(frame)));
-  let currPdv;
-  for (let key in g.pointDeVue){
-    currPdv = g.pointDeVue[key];
-    currPdv.video.pause();
-    currPdv.audio.pause();
-    currPdv.video.currentTime = "" + Math.min(currPdv.fin, Math.max(0, frameToSecond(frame -  currPdv.depart))) + "";
-    currPdv.audio.currentTime = Math.min(currPdv.fin, Math.max(0, frameToSecond(frame - currPdv.depart)));
-  }
-  g.filmTimestamp = frameToSecond(frame) * 1000;
-  g.currentFrame = frame;
-  g.previousFrame = frame - 1;
-  setLoading(true)
-  if(g.tutorial){
-    g.tutorial.moveTo(g.currentFrame);
-    g.tutorial.pause();
-  }
-}
-
-export function findClosestShotFrame(frame){
+export function findClosestShotFrame(frame: number){
   let closeFrame = null;
   CST.FILM_DATA.TIMELINE.forEach(function(shotFrame){
     if(frame >= shotFrame - CST.SNAP_DELTA_FRAME_BEFORE && frame <= shotFrame  + CST.SNAP_DELTA_FRAME_AFTER){
@@ -319,15 +291,6 @@ export function toggleVideo(){
 
 export function spawnPointDeVue(data){
   g.pointDeVue[data.name] = new PointDeVue(data.name, data.depart, data.fin, data.color);
-}
-
-export function updateTimerBar(){
-  if(window.innerHeight - g.mouse.y < CST.TIMER_SHOW_DISTANCE && !videoBarBloc.classList.contains('show'))
-    videoBarBloc.classList.add('show');
-  else if ((window.innerHeight - g.mouse.y >= CST.TIMER_SHOW_DISTANCE && videoBarBloc.classList.contains('show')))
-    videoBarBloc.classList.remove('show');
-  timerBarBloc.style.width = (g.currentFrame * 100 / CST.FILM_DATA.FIN) + '%';
-  // timerBarBloc.style.borderRightWidth = window.innerWidth - timerBarBloc.offsetWidth + 'px';
 }
 
 let fillStyles = {

@@ -1,18 +1,20 @@
 'use strict';
+//electron specific
+const { spawn } = require('child_process');
+
 //require
 const path = require('path');
 const webpack = require('webpack');
-
-//isproduction
-var isProduction = process.argv.indexOf('-p') >= 0;
-
 // plugins
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 //paths
 var sourcePath = path.join(__dirname, './src');
-var outputPath = path.join(__dirname, './dist');
+var outputPath = path.join(__dirname, './dist-electron');
+
+//isproduction
+var isProduction = process.argv.indexOf('-p') >= 0;
 
 
 var output = {
@@ -37,7 +39,7 @@ module.exports = {
   },
   devtool: 'source-map',
   output: output,
-  target: 'web',
+  target: 'electron-renderer',
   resolve: {
     extensions: [ '.ts', '.tsx', '.js'],
     mainFields: ['main']
@@ -58,7 +60,7 @@ module.exports = {
       {
         test: /\.(png|svg|jpg|gif)$/,
         use: [
-          'file-loader'
+          'file-loader?name=img/[name]__[hash:base64:5].[ext]'
         ]
       },
       {
@@ -73,7 +75,7 @@ module.exports = {
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,
         use: [
-          'file-loader'
+          'file-loader?name=font/[name]__[hash:base64:5].[ext]'
         ]
       },
       {
@@ -97,16 +99,32 @@ module.exports = {
     new ExtractTextPlugin({
       filename: 'styles.css',
       disable: !isProduction
-    }),
-    new webpack.DefinePlugin({
-      STATS_URL: (isProduction ? "''" : "'http://localhost:1337'"),
     })
+    // new webpack.DefinePlugin({
+    //   'process.env': {
+    //     'DEBUG': JSON.stringify(process.env.DEBUG)
+    //   }
+    // })
   ],
   devServer: {
     // open: true, // to open the local server in browser
     historyApiFallback: true,
+    stats: {
+      colors: true,
+      chunks: false,
+      children: false
+    },
     contentBase: sourcePath,
-    hot: true
+    hot: true,
+    setup() {
+      spawn(
+        'electron',
+        ['.'],
+        { shell: true, env: process.env, stdio: 'inherit' }
+      )
+        .on('close', code => process.exit(0))
+        .on('error', spawnError => console.error(spawnError));
+    }
   },
   node: {
     fs: 'empty',

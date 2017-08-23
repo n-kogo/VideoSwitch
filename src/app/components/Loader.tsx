@@ -38,7 +38,7 @@ export class AppLoader extends React.Component<any, any>{
       this.loads.audio = data.audio;
     }
     let globalLoad = (this.loads.audio * .7 + this.loads.video * .3);
-    let roundData = Math.round(globalLoad * 10) / 10;
+    let roundData = Math.round(globalLoad);
     if(roundData != this.state.loadedPercent){
       console.log('FILM.TSX => set State load percent', roundData)
       this.setState({loadedPercent: roundData});

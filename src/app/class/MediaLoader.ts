@@ -113,9 +113,15 @@ export class MediaLoader {
   loaded(resource: Resource, data){
     // console.info('resource loaded', resource.url, data);
     let globalLoad = 0;
+    resource.loadState = data.loaded * 100 / data.total;
     this._resources.forEach((resource)=>{
       globalLoad += resource.loadState;
     });
+    this._updateCallbacks.forEach((cb)=>{
+      // console.log('sending update at', globalLoad / this.getResLength())
+      cb(globalLoad / this.getResLength());
+    });
+
     let type = 'audio/mpeg';
     let blob = new Blob([data.target.response], {
       type: type

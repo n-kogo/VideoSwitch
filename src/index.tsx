@@ -7,6 +7,10 @@ import {App} from "./app/pages/App";
 import {Credits} from "./app/pages/Credits";
 import { Link } from 'react-router-dom';
 import {MakingOf} from "./app/pages/MakingOf";
+import {Stats} from "./app/pages/Stats";
+
+
+
 
 class Navigation extends React.Component{
   render(){
@@ -14,7 +18,6 @@ class Navigation extends React.Component{
       <div className="navigation">
         <div className="navigation__shader">
           <video id="background-video" autoPlay loop>
-            <source src="assets/videos/boucle_intro.mp4" type="video/mp4" />
           </video>
           <div className="navigation__content">
             {this.props.children}
@@ -29,11 +32,10 @@ class Navigation extends React.Component{
             <img src="./assets/icons/facebook.png" alt="facebook"/>
           </a>
           <a href="https://twitter.com/ly__Boo" target="_blank" rel="nofollower noopener" className="navigation__external">
-            <img src="./assets/icons/twitter.png" alt="facebook"/>
+            <img src="./assets/icons/twitter.png" alt="Twitter"/>
           </a>
-
           <a href="https://www.linkedin.com/in/lyne-hehlen/" target="_blank" rel="nofollower noopener" className="navigation__external">
-            <img src="./assets/icons/linkedin.png" alt="facebook"/>
+            <img src="./assets/icons/linkedin.png" alt="LinkedIn"/>
           </a>
         </div>
       </div>
@@ -44,7 +46,19 @@ class Navigation extends React.Component{
     var CST = {
       VIDEO_RATIO: 2200 / 1080,
     };
+    let width = window.innerWidth;
+    if(width > 1600){
+      width = 1920;
+    }
+    else if (width > 1000) {
+      width = 1280
+    }
+    else {
+      width = 853
+    }
     let video= document.getElementById('background-video') as HTMLVideoElement;
+    video.src= "./assets/videos/"+width+"/boucle_intro.mp4";
+    video.load();
     function resize(){
       var width, height, mtop, mleft;
       if(window.innerWidth / CST.VIDEO_RATIO <= window.innerHeight){
@@ -82,6 +96,7 @@ ReactDOM.render(
         <Navigation>
           <Route exact path="/" component={Home} />
           <Route path="/app" component={App} />
+          <Route path="/stats" component={Stats} />
           <Route path="/credits" component={Credits}/>
           <Route path="/making-of" component={MakingOf}/>
         </Navigation>

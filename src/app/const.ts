@@ -1,9 +1,10 @@
 export const CST = {
-  DEBUG: true,
+  DEBUG: false,
   // DEBUG: process.env.DEBUG,
   FULL_END: 6585,
   MIN_BUFFER_FRAMES: 20,
   TIMER_SHOW_DISTANCE: 34,
+  CODEC: 'video/mp4; codecs="avc1.42E032, mp4a.40.2"',
   OVERLAY_DATA: {
     LIST: [{
       start: 150,
