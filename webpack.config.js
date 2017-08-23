@@ -4,7 +4,8 @@ const path = require('path');
 const webpack = require('webpack');
 
 //isproduction
-var isProduction = process.argv.indexOf('-p') >= 0;
+// var isProduction = process.argv.indexOf('-p') >= 0;
+var isProduction = process.env.NODE_ENV == 'production';
 
 // plugins
 var HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -35,7 +36,7 @@ module.exports = {
       'redux'
     ]
   },
-  devtool: 'source-map',
+  devtool: isProduction ? '': 'source-map',
   output: output,
   target: 'web',
   resolve: {
