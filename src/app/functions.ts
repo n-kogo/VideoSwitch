@@ -187,7 +187,8 @@ export function selectVideo(newVideoName: string, forced?: boolean){
     if(closeFrame && closeFrame > g.currentFrame){
       g.nextShotFrame = closeFrame;
     }
-    setLoading(true);
+    g.state.isLoading = true;
+    // setLoading(true);
   }
 }
 

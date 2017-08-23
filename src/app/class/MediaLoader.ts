@@ -26,7 +26,7 @@ export class MediaLoader {
     if(!this._loadStart) this._loadStart = performance.now();
     let url = element.src;
     element.src = null;
-    console.log('load element with url:', url);
+    // console.log('load element with url:', url);
     let xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
     xhr.responseType = 'arraybuffer';

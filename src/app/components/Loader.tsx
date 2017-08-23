@@ -40,7 +40,7 @@ export class AppLoader extends React.Component<any, any>{
     let globalLoad = (this.loads.audio * .7 + this.loads.video * .3);
     let roundData = Math.round(globalLoad);
     if(roundData != this.state.loadedPercent){
-      console.log('FILM.TSX => set State load percent', roundData)
+      // console.log('FILM.TSX => set State load percent', roundData)
       this.setState({loadedPercent: roundData});
       if(roundData >= 99.9){
         this.onLoadCallback(performance.now() - this.startTime);
@@ -51,7 +51,7 @@ export class AppLoader extends React.Component<any, any>{
     this.setState({loadedPercent: props.loadedPercent});
   }
   render(){
-    console.log('APPLOADER.TSX => update render');
+    // console.log('APPLOADER.TSX => update render');
     this.loadedString = this.state.loadedPercent + '%';
     this.barStyle = {
       width: this.loadedString

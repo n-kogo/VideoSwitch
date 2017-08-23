@@ -20,7 +20,6 @@ export class VideoBar extends React.Component<any, any> {
   }
   render(){
     let percent = this.state.volume * 100 + '%';
-    console.log('volument percent', percent);
     return (
       <div className={"video-bar " + this.state.color + " "  + (!!this.state.showBar ? 'show' : '')}>
         <div className={"video-bar__play " + (this.state.isPlaying ? 'playing' : 'paused')} onClick={()=> this.handleAction('play')}></div>

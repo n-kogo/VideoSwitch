@@ -290,6 +290,7 @@ export class VideoApp{
   }
 
   moveVideoTimer(frame: number){
+    frame = Math.round(frame);
     g.state.isWaiting = true;
     if (!g.audio.voix.paused) g.audio.voix.pause();
     g.audio.voix.currentTime = Math.min(CST.FILM_DATA.FIN, Math.max(0, frameToSecond(frame)));
