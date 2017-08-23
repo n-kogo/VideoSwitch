@@ -44,7 +44,7 @@
     }
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack --progress --colors",
+    "build": "webpack -p --progress --colors",
     "dev": "webpack-dev-server --debug --hot --inline --colors --port 3000 --open",
     "debug": "cross-env DEBUG=true webpack-dev-server --debug --hot --inline --colors --port 3000 --open",
     "e-prod": "webpack --config webpack.electron-build.config.js && electron --noDevServer .",

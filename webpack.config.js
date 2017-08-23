@@ -4,8 +4,8 @@ const path = require('path');
 const webpack = require('webpack');
 
 //isproduction
-// var isProduction = process.argv.indexOf('-p') >= 0;
-var isProduction = process.env.NODE_ENV == 'production';
+var isProduction = process.argv.indexOf('-p') >= 0;
+// var isProduction = process.env.NODE_ENV == 'production';
 
 // plugins
 var HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -36,7 +36,7 @@ module.exports = {
       'redux'
     ]
   },
-  devtool: isProduction ? '': 'source-map',
+  devtool: isProduction ? 'cheap-module-source-map': 'source-map',
   output: output,
   target: 'web',
   resolve: {
@@ -97,10 +97,10 @@ module.exports = {
       disable: !isProduction
     }),
     new webpack.DefinePlugin({
-      STATS_URL: (isProduction ? "'http://stats.le-refuge-des-souvenirs.fr'" : "'http://localhost:1337'"),
+      STATS_URL: (isProduction ? "'https://stats.le-refuge-des-souvenirs.fr'" : "'http://localhost:1337'"),
     }),
-    new webpack.optimize.UglifyJsPlugin({
-    })
+    // new webpack.optimize.UglifyJsPlugin({
+    // })
   ],
   devServer: {
     // open: true, // to open the local server in browser
