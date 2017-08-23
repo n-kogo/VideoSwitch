@@ -97,7 +97,7 @@ module.exports = {
       disable: !isProduction
     }),
     new webpack.DefinePlugin({
-      STATS_URL: (isProduction ? "'https://stats.le-refuge-des-souvenirs.fr'" : "'http://localhost:1337'"),
+      STATS_URL: (isProduction ? "'https://stats.le-refuge-des-souvenirs.fr:8443'" : "'http://localhost:1337'"),
     }),
     // new webpack.optimize.UglifyJsPlugin({
     // })
