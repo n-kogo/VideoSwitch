@@ -145,6 +145,12 @@ video.active{
   background-image: url(../assets/images/button_spect.png);
 }
 
+
+.button.active{
+  opacity: 1;
+  box-shadow: 0 0 10px #59f;
+}
+
 .button.hide{
   transition: top 1s ease-in-out, opacity .85s ease-out, transform 1s, margin-top .4s;
   opacity: 0;
@@ -154,10 +160,6 @@ video.active{
   top: -20px;
 }
 
-.button.active{
-  opacity: 1;
-  box-shadow: 0 0 10px #59f;
-}
 
 .button__loading{
   opacity: .9;

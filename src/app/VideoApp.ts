@@ -148,7 +148,7 @@ export class VideoApp{
             pov: g.currentVideo,
             range: [g.currentFrame, g.currentFrame]
           });
-          console.log(this.viewingRanges)
+          // console.log(this.viewingRanges)
         }
 
         //subtitles
@@ -273,7 +273,6 @@ export class VideoApp{
   }
 
   pauseForBuffer(pdv: PointDeVue){
-    console.log('called a pause for buffer ()!')
     g.state.bufferedPOV = pdv;
     // g.state.isBuffering = true;
     if(g.state.isPlaying && !g.state.isLoading){
@@ -286,6 +285,7 @@ export class VideoApp{
         // g.pointDeVue[key].audio.currentTime = g.currentFrame;
       }
     }
+    console.log('[PauseForBUffer]: going from ', g.currentFrame, 'to ', secondToFrame(pdv.video.currentTime));
     this.moveVideoTimer(secondToFrame(pdv.video.currentTime));
   }
 
@@ -297,10 +297,12 @@ export class VideoApp{
     let currPdv;
     for (let key in g.pointDeVue){
       currPdv = g.pointDeVue[key];
-      currPdv.video.pause();
-      currPdv.audio.pause();
       currPdv.video.currentTime = "" + Math.min(currPdv.fin, Math.max(0, frameToSecond(frame -  currPdv.depart))) + "";
       currPdv.audio.currentTime = Math.min(currPdv.fin, Math.max(0, frameToSecond(frame - currPdv.depart)));
+      currPdv.video.play();
+      currPdv.video.pause();
+      currPdv.audio.play();
+      currPdv.audio.pause();
     }
     g.filmTimestamp = frameToSecond(frame) * 1000;
     g.currentFrame = frame;

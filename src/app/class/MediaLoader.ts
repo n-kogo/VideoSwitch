@@ -145,6 +145,10 @@ export class MediaLoader {
   getResLength(){
     return this._resources.length;
   }
+  flush(){
+    this._loadCallbacks = [];
+    this._updateCallbacks = [];
+  }
 }
 
 

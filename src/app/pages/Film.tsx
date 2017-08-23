@@ -6,7 +6,7 @@ import {
   toggleVideo
 } from "../functions";
 import {AppLoader} from "../components/Loader";
-import {g} from "../globals";
+import {g, resetGlobals} from "../globals";
 import {IntroText} from "../components/IntroText";
 import {Tutorial} from "../components/Tutorial";
 import {VideoBar} from "../components/VideoBar";
@@ -14,6 +14,7 @@ import {BufferOverlay} from "../components/BufferOverlay";
 import { withRouter } from 'react-router';
 import axios from 'axios';
 import {Subtitles, supportedLangs} from "../components/Subtitles";
+import {LoaderService} from "../class/MediaLoader";
 
 
 class FilmWithoutRouter extends React.Component<any, any>{
@@ -22,6 +23,10 @@ class FilmWithoutRouter extends React.Component<any, any>{
   history: any;
   constructor(props){
     super(props);
+    //flush dirty globals ...
+    resetGlobals();
+    LoaderService.flush();
+
     this.history = props.history;
     this.state = {loadedPercent: 0};
     this.onVideoUpdate = this.onVideoUpdate.bind(this);
@@ -84,11 +89,13 @@ class FilmWithoutRouter extends React.Component<any, any>{
     )
   }
   componentDidMount(){
+
     cacheDomElements();
     this.app = new VideoApp(this.onComplete);
     g.videoBar = this.refs.videoBar as VideoBar;
     g.subtitles = this.refs.subtitles as Subtitles;
     g.bufferOverlay = this.refs.bufferOverlay as BufferOverlay;
+
   }
   componentWillUnmount(){
     this.app.kill();
