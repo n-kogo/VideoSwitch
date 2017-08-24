@@ -44,7 +44,7 @@ export class VideoApp{
     LoaderService.load(g.audio.voix);
     // LoaderService.update();
     LoaderService.onLoad((loadTime)=>{
-      console.log('____ LOADER SERVICE AUDIO FINISHED ____');
+      // console.log('____ LOADER SERVICE AUDIO FINISHED ____');
       console.log('');
       setResolution(loadTime);
       for(let key in g.pointDeVue){
@@ -55,7 +55,7 @@ export class VideoApp{
     this.frameUpdate = this.frameUpdate.bind(this);
   }
   onLoad(loadTime: number){
-    console.log('LOADER FULL LOAD EVENT');
+    // console.log('LOADER FULL LOAD EVENT');
     g.audio.voix.volume = 1;
     g.state.isAudioLoaded = true;
     setVolume(1);
@@ -184,7 +184,7 @@ export class VideoApp{
           let currentFramePdv = getAbsoluteFrame(currPdv);
           let closestRange = findClosestRange(currPdv, g.currentFrame);
           if(!g.state.isLoading && (!closestRange || (g.currentFrame - currPdv.depart >= closestRange[1]))){
-            console.log('called for pause by', currPdv.tag, closestRange, currPdv.getVideoBuffer(), g.currentFrame)
+            // console.log('called for pause by', currPdv.tag, closestRange, currPdv.getVideoBuffer(), g.currentFrame)
             this.pauseForBuffer(currPdv);
           }
           // console.log('timediff on ', key, g.currentFrame - currentFramePdv, g.currentFrame, currentFramePdv)
@@ -242,7 +242,7 @@ export class VideoApp{
         }
         if(ready && validState) playNextPOV();
         else {
-          console.log('ready', ready, 'validstate', validState)
+          // console.log('ready', ready, 'validstate', validState)
         }
       }
       else{
@@ -300,7 +300,7 @@ export class VideoApp{
         // g.pointDeVue[key].audio.currentTime = g.currentFrame;
       }
     }
-    console.log('[PauseForBUffer]: going from ', g.currentFrame, 'to ', secondToFrame(pdv.video.currentTime));
+    // console.log('[PauseForBUffer]: going from ', g.currentFrame, 'to ', secondToFrame(pdv.video.currentTime));
     this.moveVideoTimer(pdv.depart + secondToFrame(pdv.video.currentTime));
   }
 

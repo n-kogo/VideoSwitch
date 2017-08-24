@@ -37,7 +37,7 @@ export class StatSaveInfo extends React.Component<any, StatSaveInfoState>{
   }
 
   startSave(data: Array<ViewinRange>){
-    console.log(data, 'start save');
+    // console.log(data, 'start save');
     this.saving = true;
     this.setState({
       statInfo: 'loading'
@@ -46,7 +46,7 @@ export class StatSaveInfo extends React.Component<any, StatSaveInfoState>{
   }
 
   onSaveComplete(response: AxiosResponse){
-    console.log('save complete')
+    // console.log('save complete')
     if(response.status == 200){
       window.localStorage.setItem('video-stat', JSON.stringify(response.data.percents));
       setTimeout(()=>{

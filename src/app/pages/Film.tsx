@@ -98,6 +98,8 @@ class FilmWithoutRouter extends React.Component<any, FilmState>{
     )
   }
   componentDidMount(){
+    console.info('Welcome on Le Refuge des Souvenirs! :)');
+    console.info('Code is still a bit rough around the edges, you may encouter some minor issues.')
     cacheDomElements();
     this.app = new VideoApp(this.onComplete);
     g.videoBar = this.refs.videoBar as VideoBar;
@@ -151,7 +153,7 @@ class FilmWithoutRouter extends React.Component<any, FilmState>{
 
   //mobile specific function
   handleEmptyTouch(){
-    console.log('youpi empty');
+    // console.log('youpi empty');
     if(g.checkMobile()){
       g.videoBar.showBar();
     }

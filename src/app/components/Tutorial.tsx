@@ -47,7 +47,7 @@ export class Tutorial extends React.Component{
     this.tl.pause();
   }
   start(frame: number){
-    console.log('start TUTORIAL');
+    // console.log('start TUTORIAL');
     this.moveTo(frame);
     let onShadow = "0 0 50px rgba(11, 115, 129, 0.8)";
     let offShadow = "0 0 50px rgba(10, 84, 90, 0.5)";

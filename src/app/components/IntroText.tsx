@@ -26,7 +26,7 @@ export class IntroText extends React.Component<any, any>{
     this.container = document.getElementById('intro-container')
   }
   start(){
-    console.log('starting animation');
+    // console.log('starting animation');
     this.tl.to(this.container, 0.6, {opacity: 1}, "+=0.15");
     this.tl.to(this.text, 1, {opacity: 1}, "+=0.65");
     this.tl.to(this.container, 6.5, {opacity: 1, onComplete: ()=>{

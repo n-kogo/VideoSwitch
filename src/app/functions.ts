@@ -105,7 +105,7 @@ export function resize(){
 }
 
 export function setResolution(loadTime: number){
-  console.info('SET RESOLUTION', loadTime)
+  // console.info('SET RESOLUTION', loadTime)
   let w = window.innerWidth;
   let r = 0;
   let storedTime = window.localStorage.getItem('audio-load-time');
@@ -265,7 +265,7 @@ export function drawDebugTimeline(){
 }
 
 export function toggleVideo(){
-  console.log('TOGGLE VIDEO', g.tutorial)
+  // console.log('TOGGLE VIDEO', g.tutorial)
   g.state.isPlaying = !g.state.isPlaying;
   g.videoBar.updatePlayStatus(g.state.isPlaying);
   if(g.state.isPlaying){
@@ -274,7 +274,7 @@ export function toggleVideo(){
   }
   else {
     g.audio.voix.pause();
-    console.log('should pause')
+    // console.log('should pause')
     if(g.tutorial) g.tutorial.pause();
   }
   for(let key in g.pointDeVue){
@@ -375,12 +375,12 @@ export function bufferUpdate(){
   let specRange = findClosestRange(g.pointDeVue.spectateur);
   let bufferedEnd;
   if(!specRange){
-    console.log('spec range not found', g.pointDeVue.spectateur.getVideoBuffer(), g.currentFrame)
+    // console.log('spec range not found', g.pointDeVue.spectateur.getVideoBuffer(), g.currentFrame)
     bufferedEnd = g.currentFrame;
   }
   else{
     if (specRange[1] ==  g.currentFrame){
-      console.log('[bufferUpdate()]: found end of buffer = currentframe, gonna break')
+      // console.log('[bufferUpdate()]: found end of buffer = currentframe, gonna break')
     }
     bufferedEnd = specRange[1];
   }
@@ -388,7 +388,7 @@ export function bufferUpdate(){
   if(isPointDeVueAvailable(g.pointDeVue.emma, g.currentFrame)){
     let emmaRange = findClosestRange(g.pointDeVue.emma);
     if(!emmaRange){
-      console.log(emmaRange, g.currentFrame, 'emma range is out of bounds, most likely behind frame');
+      // console.log(emmaRange, g.currentFrame, 'emma range is out of bounds, most likely behind frame');
       bufferedEnd = Math.min(bufferedEnd, g.currentFrame);
     }
     else {
@@ -400,7 +400,7 @@ export function bufferUpdate(){
   if(isPointDeVueAvailable(g.pointDeVue.solvej, g.currentFrame)){
     let solvejRange = findClosestRange(g.pointDeVue.solvej);
     if(!solvejRange){
-      console.log(solvejRange, g.currentFrame, 'solvej range is out of bounds, most likely behind frame');
+      // console.log(solvejRange, g.currentFrame, 'solvej range is out of bounds, most likely behind frame');
       bufferedEnd = Math.min(bufferedEnd, g.currentFrame);
     }
     else{

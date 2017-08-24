@@ -43,7 +43,7 @@ class Navigation extends React.Component{
     )
   }
   componentDidMount(){
-    console.log('mount complete')
+    // console.log('mount complete')
     var CST = {
       VIDEO_RATIO: 2200 / 1080,
     };

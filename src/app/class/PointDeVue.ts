@@ -73,7 +73,7 @@ export class PointDeVue{
   updateVolume(value: number){
     if(!this.muted){
       this.audio.volume = value;
-      console.log(this.audio, LoaderService._resources);
+      // console.log(this.audio, LoaderService._resources);
     }
   }
 
@@ -136,12 +136,12 @@ export class PointDeVue{
     this.sourceBuffer = this.videoSource.addSourceBuffer(CST.CODEC);
     this.fetchStream(this.src, (buffer: ArrayBuffer)=>{
       this.sourceBuffer.addEventListener('updateend', (_)=>{
-        console.log(this.videoSource.readyState, 'at update end', this.getVideoBuffer(), this.video.readyState);
+        // console.log(this.videoSource.readyState, 'at update end', this.getVideoBuffer(), this.video.readyState);
         // this.videoSource.endOfStream()
         // debugger;
       });
       this.sourceBuffer.appendBuffer(buffer);
-      console.log(this.getVideoBuffer(), this.video.readyState, buffer.byteLength)
+      // console.log(this.getVideoBuffer(), this.video.readyState, buffer.byteLength)
     });
     // this.video.load()
 
@@ -163,7 +163,7 @@ export class PointDeVue{
     this.audio.load();
     this.video.pause();
     this.video.src = "";
-    console.log('video kill lol')
+    // console.log('video kill lol')
     this.video.load();
   }
 }

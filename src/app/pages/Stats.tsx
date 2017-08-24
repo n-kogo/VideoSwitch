@@ -32,7 +32,7 @@ export class Stats extends React.Component<any, StatsState>{
     };
   }
   render(){
-    console.log(this.state);
+    // console.log(this.state);
     const global = this.state.globalStats ?
       <div className="stats__bloc">
         <h2 className="stats__title">L'expérience des autres spectateurs</h2>
