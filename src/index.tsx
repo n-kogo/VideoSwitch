@@ -99,6 +99,7 @@ ReactDOM.render(
           <Route path="/stats" component={Stats} />
           <Route path="/credits" component={Credits}/>
           <Route path="/making-of" component={MakingOf}/>
+          <Route component={Home} />
         </Navigation>
       </Switch>
 
