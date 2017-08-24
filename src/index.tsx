@@ -94,12 +94,15 @@ ReactDOM.render(
       <Switch>
         <Route path="/film" component={Film} />
         <Navigation>
-          <Route exact path="/" component={Home} />
-          <Route path="/app" component={App} />
-          <Route path="/stats" component={Stats} />
-          <Route path="/credits" component={Credits}/>
-          <Route path="/making-of" component={MakingOf}/>
-          <Route component={Home} />
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route path="/app" component={App} />
+            <Route path="/stats" component={Stats} />
+            <Route path="/credits" component={Credits}/>
+            <Route path="/making-of" component={MakingOf}/>
+            <Route component={Home} />
+          </Switch>
+
         </Navigation>
       </Switch>
 
