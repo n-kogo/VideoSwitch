@@ -8,6 +8,7 @@ import {Credits} from "./app/pages/Credits";
 import { Link } from 'react-router-dom';
 import {MakingOf} from "./app/pages/MakingOf";
 import {Stats} from "./app/pages/Stats";
+import {Redirect} from "react-router";
 
 
 
@@ -100,7 +101,7 @@ ReactDOM.render(
             <Route path="/stats" component={Stats} />
             <Route path="/credits" component={Credits}/>
             <Route path="/making-of" component={MakingOf}/>
-            <Route component={Home} />
+            <Redirect to="/" />
           </Switch>
 
         </Navigation>
