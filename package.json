@@ -47,6 +47,7 @@
     "build": "webpack -p --progress --colors",
     "dev": "webpack-dev-server --debug --hot --inline --colors --port 3000 --open",
     "debug": "cross-env DEBUG=true webpack-dev-server --debug --hot --inline --colors --port 3000 --open",
+    "deploy": "git pull origin master && npm run build && cd dist && cp -R ./ /var/www/alpha/ && cd ..",
     "e-prod": "webpack --config webpack.electron-build.config.js && electron --noDevServer .",
     "e-dev": "webpack-dev-server --hot --host 0.0.0.0 --config=./webpack.electron-dev.config.js",
     "e-build": "webpack --config webpack.electron-build.config.js",
