@@ -105,7 +105,7 @@ export const subtitles:  {[s: string]: Array<Subtitle>} = {
       "end": 3568
     },
     {
-      "text": "J'viens dès que je peux et je remets toujours les choses à leurs places.",
+      "text": "J'viens dès que je peux et je remets toujours les choses à leur place.",
       "owner": "s",
       "start": 3610,
       "end": 3695
@@ -123,7 +123,7 @@ export const subtitles:  {[s: string]: Array<Subtitle>} = {
       "end": 3881
     },
     {
-      "text": "Les choses ont changées, tu ne t'en rends pas compte mais...",
+      "text": "Les choses ont changé, tu ne t'en rends pas compte mais...",
       "owner": "e",
       "start": 3882,
       "end": 3982
@@ -531,7 +531,4 @@ export const subtitles:  {[s: string]: Array<Subtitle>} = {
       "end": 6950
     }
   ]
-}
-
-
-
+};

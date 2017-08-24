@@ -131,10 +131,10 @@ export function setResolution(loadTime: number){
   if(loadTime > 10 * 1000){ // < 2Mo/s
     r = Math.min(r, 1280)
   }
-  if (loadTime > 60 * 1000){ // <300Ko/s
+  if (loadTime > 55 * 1000){ // <300Ko/s
     r = Math.min(r, 853)
   }
-  if(loadTime > 90 * 1000){
+  if(loadTime > 75 * 1000){
     r = Math.min(r, 640)
   }
   g.resolution = r;

@@ -17,7 +17,7 @@ var outputPath = path.join(__dirname, './dist');
 
 
 var output = {
-  filename: 'bundle.js',
+  filename: isProduction ? 'bundle.[chunkhash].js': 'bundle.js',
   sourceMapFilename: '[file].map',
   path: outputPath,
   publicPath: '/'
@@ -36,7 +36,7 @@ module.exports = {
       'redux'
     ]
   },
-  devtool: isProduction ? 'cheap-module-source-map': 'source-map',
+  devtool: isProduction ? '': 'source-map',
   output: output,
   target: 'web',
   resolve: {
@@ -86,11 +86,12 @@ module.exports = {
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
-      filename: 'vendor.bundle.js',
+      filename: isProduction ? 'vendor.bundle.[chunkhash].js': 'vendor.bundle.js',
       minChunks: Infinity
     }),
     new HtmlWebpackPlugin({
-      template: 'index.html'
+      template: 'index.html',
+      hash: false,
     }),
     new ExtractTextPlugin({
       filename: 'styles.css',
