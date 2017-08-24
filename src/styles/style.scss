@@ -739,6 +739,30 @@ video.active{
     text-align: center;
     margin-top: 90px;
   }
+  &__info{
+    margin-top: 30px;
+    display: flex;
+    width: 100%;
+    font-size: .9em;
+    &:before{
+      content: 'i';
+      font-size: 1.1em;
+      margin-right: 5px;
+      font-style: normal;
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      font-weight: bold;
+      color: $color-neutre;
+      border: 2px solid $color-neutre;
+      border-radius: 50%;
+    }
+    color: #a4a885;
+    font-style: italic;
+  }
 }
 
 .home-container{
