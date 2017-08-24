@@ -1,5 +1,5 @@
 export const CST = {
-  DEBUG: true,
+  DEBUG: false,
   // DEBUG: process.env.DEBUG,
   FULL_END: 6585,
   CREDITS_START: 6970,
