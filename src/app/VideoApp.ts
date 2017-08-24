@@ -286,7 +286,8 @@ export class VideoApp{
       }
     }
     console.log('[PauseForBUffer]: going from ', g.currentFrame, 'to ', secondToFrame(pdv.video.currentTime));
-    this.moveVideoTimer(secondToFrame(pdv.video.currentTime));
+    debugger;
+    this.moveVideoTimer(pdv.depart + secondToFrame(pdv.video.currentTime));
   }
 
   moveVideoTimer(frame: number){
