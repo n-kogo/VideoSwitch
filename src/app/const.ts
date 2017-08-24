@@ -1,7 +1,8 @@
 export const CST = {
-  DEBUG: false,
+  DEBUG: true,
   // DEBUG: process.env.DEBUG,
   FULL_END: 6585,
+  CREDITS_START: 6970,
   MIN_BUFFER_FRAMES: 20,
   TIMER_SHOW_DISTANCE: 34,
   CODEC: 'video/mp4; codecs="avc1.42E032, mp4a.40.2"',

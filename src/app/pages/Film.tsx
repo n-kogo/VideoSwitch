@@ -15,9 +15,13 @@ import { withRouter } from 'react-router';
 import axios from 'axios';
 import {Subtitles, supportedLangs} from "../components/Subtitles";
 import {LoaderService} from "../class/MediaLoader";
+import {StatSaveInfo} from "../components/StatSaveInfo";
 
+interface FilmState{
+  loadedPercent: number,
+}
 
-class FilmWithoutRouter extends React.Component<any, any>{
+class FilmWithoutRouter extends React.Component<any, FilmState>{
   app: VideoApp;
   videoUpdateCb: Array<Function> = [];
   history: any;
@@ -28,10 +32,12 @@ class FilmWithoutRouter extends React.Component<any, any>{
     LoaderService.flush();
 
     this.history = props.history;
-    this.state = {loadedPercent: 0};
     this.onVideoUpdate = this.onVideoUpdate.bind(this);
     this.onLoad = this.onLoad.bind(this);
     this.loadUpdate();
+    this.state = {
+      loadedPercent: 0,
+    };
 
     //bindings
     this.onIntroComplete = this.onIntroComplete.bind(this);
@@ -52,6 +58,7 @@ class FilmWithoutRouter extends React.Component<any, any>{
     }
   }
   render(){
+
     return (
       <div>
         <div id="loading-container">
@@ -59,6 +66,7 @@ class FilmWithoutRouter extends React.Component<any, any>{
         </div>
         <IntroText ref="intro" onComplete={this.onIntroComplete} />
         <div className="app-container" onTouchStart={()=>this.handleEmptyTouch()}>
+          <div className="black-screen hide"></div>
           <div id="pause-overlay">
             <div className="pause-overlay__button" onTouchEnd={()=>toggleVideo()}></div>
           </div>
@@ -76,6 +84,7 @@ class FilmWithoutRouter extends React.Component<any, any>{
           </div>
           <Subtitles ref="subtitles" />
           <div className="container-button">
+            <StatSaveInfo ref="statSave" />
             <div className="button hide emma" id="emma-bt">
             </div>
             <div className="button hide spectateur button-spectateur" id="spectateur-bt">
@@ -89,12 +98,12 @@ class FilmWithoutRouter extends React.Component<any, any>{
     )
   }
   componentDidMount(){
-
     cacheDomElements();
     this.app = new VideoApp(this.onComplete);
     g.videoBar = this.refs.videoBar as VideoBar;
     g.subtitles = this.refs.subtitles as Subtitles;
     g.bufferOverlay = this.refs.bufferOverlay as BufferOverlay;
+    g.statSave = this.refs.statSave as StatSaveInfo;
 
   }
   componentWillUnmount(){
@@ -112,12 +121,7 @@ class FilmWithoutRouter extends React.Component<any, any>{
     this.videoUpdateCb.push(fn);
   }
   onComplete(data: any){
-    axios.post(STATS_URL, {ranges: data}, {}).then((response)=>{
-      if(response.status == 200){
-        window.localStorage.setItem('video-stat', JSON.stringify(response.data.percents));
-        this.history.push('/stats');
-      }
-    });
+    this.history.push('/stats');
   }
   handleAction(key: string, value?: any){
     switch(key){

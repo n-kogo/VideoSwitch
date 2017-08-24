@@ -24,13 +24,15 @@ Il faut laisser l'ancienne vidéo, si existante,
 jouer et par dessus. Animer le bouton
 */
 
+export interface ViewinRange {
+  pov: string,
+  range: [number, number]
+}
+
 export class VideoApp{
   tutorial: Tutorial;
   onCompleteCallback: Function;
-  viewingRanges: Array<{
-    pov: string,
-    range: [number, number]
-  }> = [];
+  viewingRanges: Array<ViewinRange> = [];
   constructor(onCompleteCallback: Function){
     this.onCompleteCallback = onCompleteCallback;
     CST.POINTS_DE_VUE.forEach(pointDeVue=>{
@@ -132,24 +134,34 @@ export class VideoApp{
       let currPdv, key;
       g.deltaTimestamp = performance.now() - g.currentTimestamp;
       g.currentTimestamp = performance.now();
+      // film is playing
       if(g.state.isPlaying && !g.state.isWaiting){
-        //viewing range for stat
-        if(this.viewingRanges.length == 0){
-          this.viewingRanges.push({
-            pov: g.currentVideo,
-            range: [g.currentFrame, g.currentFrame]
-          });
+        if(g.currentFrame <= CST.CREDITS_START){
+          //viewing range for stat
+          if(this.viewingRanges.length == 0){
+            this.viewingRanges.push({
+              pov: g.currentVideo,
+              range: [g.currentFrame, g.currentFrame]
+            });
+          }
+          else if(this.viewingRanges[this.viewingRanges.length - 1].pov === g.currentVideo){
+            this.viewingRanges[this.viewingRanges.length - 1].range[1] = g.currentFrame;
+          }
+          else {
+            this.viewingRanges.push({
+              pov: g.currentVideo,
+              range: [g.currentFrame, g.currentFrame]
+            });
+            // console.log(this.viewingRanges)
+          }
+
         }
-        else if(this.viewingRanges[this.viewingRanges.length - 1].pov === g.currentVideo){
-          this.viewingRanges[this.viewingRanges.length - 1].range[1] = g.currentFrame;
+        //save ranges on credits start
+        else if(!g.statSave.saving){
+          g.statSave.startSave(this.viewingRanges);
         }
-        else {
-          this.viewingRanges.push({
-            pov: g.currentVideo,
-            range: [g.currentFrame, g.currentFrame]
-          });
-          // console.log(this.viewingRanges)
-        }
+
+
 
         //subtitles
         g.subtitles.updateTimer(g.currentFrame);
@@ -261,9 +273,12 @@ export class VideoApp{
       }
 
       g.videoBar.updateBar();
-      if(!isPointDeVueAvailable(g.pointDeVue.spectateur, g.currentFrame) && document.getElementById('loading-container').classList.contains('hide')){
-        document.getElementById('loading-container').classList.remove('hide');
-        this.onCompleteCallback(this.viewingRanges);
+      let blackS = document.getElementsByClassName('black-screen')[0];
+      if(!isPointDeVueAvailable(g.pointDeVue.spectateur, g.currentFrame) && blackS.classList.contains('hide')){
+        blackS.classList.remove('hide');
+        setTimeout(()=>{
+          this.onCompleteCallback(this.viewingRanges);
+        }, 400);
       }
       else {
         window.requestAnimationFrame(this.frameUpdate);
@@ -286,7 +301,6 @@ export class VideoApp{
       }
     }
     console.log('[PauseForBUffer]: going from ', g.currentFrame, 'to ', secondToFrame(pdv.video.currentTime));
-    debugger;
     this.moveVideoTimer(pdv.depart + secondToFrame(pdv.video.currentTime));
   }
 
@@ -309,7 +323,7 @@ export class VideoApp{
     g.currentFrame = frame;
     g.previousFrame = frame - 1;
     this.viewingRanges.push({
-      pov: g.currentVideo,
+      pov: g.currentVideo || 'spectateur',
       range: [g.currentFrame, g.currentFrame]
     });
     setLoading(true);
