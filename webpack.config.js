@@ -5,6 +5,7 @@ const webpack = require('webpack');
 
 //isproduction
 var isProduction = process.argv.indexOf('-p') >= 0;
+var isDebug = process.argv.indexOf('-d') >= 0;
 // var isProduction = process.env.NODE_ENV == 'production';
 
 // plugins
@@ -99,6 +100,7 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       STATS_URL: (isProduction ? "'https://stats.le-refuge-des-souvenirs.fr:8443'" : "'http://localhost:1337'"),
+      IS_DEBUGGING: isDebug
     }),
     // new webpack.optimize.UglifyJsPlugin({
     // })

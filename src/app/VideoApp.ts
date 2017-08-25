@@ -71,17 +71,20 @@ export class VideoApp{
     if(CST.DEBUG){
       g.debugElements = g.debugElements.concat([
         new DebugElement('frame-count', ()=>{return g.currentFrame.toFixed(0)}),
-        new DebugElement('abs-pov-frame', ()=>{return  (g.pointDeVue[g.currentVideo].depart + secondToFrame(g.pointDeVue[g.currentVideo].video.currentTime))}),
-        new DebugElement('voix-frame', ()=>{return  secondToFrame(g.audio.voix.currentTime) }),
-        new DebugElement('cab-abs-frame', ()=>{return  (g.pointDeVue.spectateur.depart + secondToFrame(g.pointDeVue.spectateur.video.currentTime))}),
-        new DebugElement('cab-audio-frame', ()=>{return  (g.pointDeVue.spectateur.depart + secondToFrame(g.pointDeVue.spectateur.audio.currentTime))}),
-        new DebugElement('emma-abs-frame', ()=>{return  (g.pointDeVue.emma.depart + secondToFrame(g.pointDeVue.emma.video.currentTime))}),
-        new DebugElement('emma-audio-frame', ()=>{return  (g.pointDeVue.emma.depart + secondToFrame(g.pointDeVue.emma.audio.currentTime))}),
-        new DebugElement('solvej-pov-frame', ()=>{return  (g.pointDeVue.solvej.depart + secondToFrame(g.pointDeVue.solvej.video.currentTime))}),
-        new DebugElement('cabane-speed', ()=>{return  g.pointDeVue.spectateur.video.playbackRate}),
-        new DebugElement('audio-volume', ()=>{return  g.audio.voix.volume}),
-        new DebugElement('audio-playbackrate', ()=>{return  g.audio.voix.playbackRate}),
-        new DebugElement('audio-currenttime', ()=>{return  g.audio.voix.currentTime}),
+        new DebugElement('abs-pov-frame', ()=>{if(g.currentVideo) return  (g.pointDeVue[g.currentVideo].depart + secondToFrame(g.pointDeVue[g.currentVideo].video.currentTime))}),
+        new DebugElement('SolvejReadyState', ()=>{return  (g.pointDeVue.solvej.video.readyState + '/' + g.pointDeVue.solvej.audio.readyState)}),
+        new DebugElement('spectateurReadyState', ()=>{return  (g.pointDeVue.spectateur.video.readyState + '/' + g.pointDeVue.spectateur.audio.readyState)}),
+        new DebugElement('emmaReadyState', ()=>{return  (g.pointDeVue.emma.video.readyState + '/' + g.pointDeVue.emma.audio.readyState)}),
+        // new DebugElement('voix-frame', ()=>{return  secondToFrame(g.audio.voix.currentTime) }),
+        // new DebugElement('cab-abs-frame', ()=>{return  (g.pointDeVue.spectateur.depart + secondToFrame(g.pointDeVue.spectateur.video.currentTime))}),
+        // new DebugElement('cab-audio-frame', ()=>{return  (g.pointDeVue.spectateur.depart + secondToFrame(g.pointDeVue.spectateur.audio.currentTime))}),
+        // new DebugElement('emma-abs-frame', ()=>{return  (g.pointDeVue.emma.depart + secondToFrame(g.pointDeVue.emma.video.currentTime))}),
+        // new DebugElement('emma-audio-frame', ()=>{return  (g.pointDeVue.emma.depart + secondToFrame(g.pointDeVue.emma.audio.currentTime))}),
+        // new DebugElement('solvej-pov-frame', ()=>{return  (g.pointDeVue.solvej.depart + secondToFrame(g.pointDeVue.solvej.video.currentTime))}),
+        // new DebugElement('cabane-speed', ()=>{return  g.pointDeVue.spectateur.video.playbackRate}),
+        // new DebugElement('audio-volume', ()=>{return  g.audio.voix.volume}),
+        // new DebugElement('audio-playbackrate', ()=>{return  g.audio.voix.playbackRate}),
+        // new DebugElement('audio-currenttime', ()=>{return  g.audio.voix.currentTime}),
         // new DebugElement('current-pov-frame', ()=>{return secondToFrame(g.pointDeVue[g.currentVideo].video.currentTime).toFixed(0)}),
 
       ]);
@@ -128,6 +131,7 @@ export class VideoApp{
     if(!g.state.isAudioLoaded || !g.state.isIntroComplete){
       //TODO: remove this state
       window.requestAnimationFrame(this.frameUpdate);
+
     }
     else {
       // console.log("audio loaded")
@@ -160,8 +164,6 @@ export class VideoApp{
         else if(!g.statSave.saving){
           g.statSave.startSave(this.viewingRanges);
         }
-
-
 
         //subtitles
         g.subtitles.updateTimer(g.currentFrame);
@@ -255,13 +257,6 @@ export class VideoApp{
         }
       }
 
-      if(CST.DEBUG){
-        if(g.currentVideo){
-          g.debugElements.forEach((debugElement: DebugElement)=>{
-            debugElement.update();
-          });
-        }
-      }
       g.frameLoop++;
       if(g.frameLoop >= 60){
         g.frameLoop = 0;
@@ -283,6 +278,11 @@ export class VideoApp{
       else {
         window.requestAnimationFrame(this.frameUpdate);
       }
+    }
+    if(CST.DEBUG){
+      g.debugElements.forEach((debugElement: DebugElement)=>{
+        debugElement.update();
+      });
     }
     //video end
   }

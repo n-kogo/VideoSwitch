@@ -188,7 +188,7 @@ video.active{
   left: calc(0.86 * 100%);
   position: absolute;
   color:#ccc;
-  z-index: 40;
+  z-index: 1000;
   top: 50%;
   pointer-events: none;
   touch-action: none;

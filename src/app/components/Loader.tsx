@@ -2,6 +2,8 @@ import * as React from 'react';
 import {LoaderService} from "../class/MediaLoader";
 import './loader.scss';
 import {g} from "../globals";
+import {CST} from "../const";
+import {DebugElement} from "../class/debugElement";
 
 export class AppLoader extends React.Component<any, any>{
   startTime: number;
@@ -44,6 +46,14 @@ export class AppLoader extends React.Component<any, any>{
       this.setState({loadedPercent: roundData});
       if(roundData >= 99.9){
         this.onLoadCallback(performance.now() - this.startTime);
+      }
+    }
+    console.log('load update')
+    if(CST.DEBUG){
+      if(g.currentVideo){
+        g.debugElements.forEach((debugElement: DebugElement)=>{
+          debugElement.update();
+        });
       }
     }
   }

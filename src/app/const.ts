@@ -1,6 +1,6 @@
 export const CST = {
-  DEBUG: false,
-  // DEBUG: process.env.DEBUG,
+  // DEBUG: false,
+  DEBUG: IS_DEBUGGING,
   FULL_END: 6585,
   CREDITS_START: 6970,
   MIN_BUFFER_FRAMES: 20,
