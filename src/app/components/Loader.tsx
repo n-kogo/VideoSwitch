@@ -48,7 +48,6 @@ export class AppLoader extends React.Component<any, any>{
         this.onLoadCallback(performance.now() - this.startTime);
       }
     }
-    console.log('load update')
     if(CST.DEBUG){
       if(g.currentVideo){
         g.debugElements.forEach((debugElement: DebugElement)=>{

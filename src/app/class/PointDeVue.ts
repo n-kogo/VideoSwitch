@@ -58,12 +58,13 @@ export class PointDeVue{
     // TODO: determine in audio.readystate is useful
     this.getVideoBuffer();
     let range = findClosestRange(this, g.currentFrame);
-    let bool = this.fin < g.currentFrame ||(
-      (this.audio.readyState == 4 || this.audio.currentTime === this.audio.duration)
-      && (this.video.readyState == 4 || this.video.currentTime === this.video.duration)
+    let readyStateMin = g.isFirefox ? 3 : 4;
+    let audioReady = (this.audio.readyState == readyStateMin || this.audio.currentTime === this.audio.duration);
+    let videoReady = (this.audio.readyState == readyStateMin || this.video.currentTime === this.video.duration);
+    let bool = this.fin < g.currentFrame ||( audioReady  && videoReady);
       // &&(!isPointDeVueAvailable(this, g.currentFrame)
       //   || (range  && range[1] > g.currentFrame - this.depart + CST.MIN_BUFFER_FRAMES)
-    );
+    // );
     if(range){
       // console.log('advance frame is', (range[1] - (g.currentFrame - this.depart)), 'for', this.tag )
     }
