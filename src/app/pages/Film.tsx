@@ -48,6 +48,7 @@ class FilmWithoutRouter extends React.Component<any, FilmState>{
     let load = 0;
     for(let key in g.pointDeVue){
       load += g.pointDeVue[key].video.readyState;
+      console.log(load, 'load after', key);
     }
     load = load * 100 /  12; // 12 for 3 pov * 4 possible states;
     this.videoUpdateCb.forEach(function(cb){
