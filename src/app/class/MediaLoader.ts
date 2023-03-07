@@ -1,5 +1,4 @@
 import {Media} from "../const";
-import {getMediaBuffer, secondToFrame} from "../functions";
 
 interface Resource {
   media: Media;
