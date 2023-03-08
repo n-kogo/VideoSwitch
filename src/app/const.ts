@@ -1,5 +1,6 @@
 export const CST = {
   // DEBUG: false,
+  READY_STATE: 3, // cannot operate with 4, Firefox refuses to put some video to 4...
   DEBUG: IS_DEBUGGING,
   FULL_END: 6585,
   CREDITS_START: 6970,

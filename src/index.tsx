@@ -29,8 +29,8 @@ class Navigation extends React.Component{
           <Link to="/film" className="navigation__element">FILM</Link>
           <Link to="/credits" className="navigation__element">CRÉDITS</Link>
           <Link to="/making-of" className="navigation__element">MAKING-OF</Link>
-          <a href="https://www.facebook.com/lyne.boo/" target="_blank" rel="nofollower noopener" className="navigation__external">
-            <img src="./assets/icons/facebook.png" alt="facebook"/>
+          <a href="https://www.instagram.com/ly__boo" target="_blank" rel="nofollower noopener" className="navigation__external">
+            <img src="./assets/icons/instagram.png" alt="instagram"/>
           </a>
           <a href="https://twitter.com/ly__Boo" target="_blank" rel="nofollower noopener" className="navigation__external">
             <img src="./assets/icons/twitter.png" alt="Twitter"/>

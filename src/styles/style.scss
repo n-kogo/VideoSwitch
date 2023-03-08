@@ -596,6 +596,7 @@ video.active{
   background-color: white;
   position: absolute;
   top: 0;
+  z-index: 1000;
 }
 
 #timer-background{
