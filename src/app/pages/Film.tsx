@@ -48,10 +48,10 @@ class FilmWithoutRouter extends React.Component<any, FilmState>{
         let load = 0;
         for (let key in g.pointDeVue) {
             if (g.isFirefox) {
-                load += g.pointDeVue[key].video.readyState;
+                load += Math.min(3, g.pointDeVue[key].video.readyState);
             }
             else {
-                load += Math.min(3, g.pointDeVue[key].video.readyState);
+                load += g.pointDeVue[key].video.readyState;
             }
         }
         load = load * 100 / (g.isFirefox ? 9 : 12); // 12 for 3 pov * 4 possible states;
